@@ -2,161 +2,224 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Time's Up Game v1.02.08</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Time's Up Game v1.03.05</title>
     <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --primary: #ff4757;
+            --primary-hover: #ff6b81;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+            --radius-sm: 12px;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         body {
-            background: linear-gradient(135deg, #1e1e2f, #2a2a40);
-            color: #ffffff;
+            background: var(--bg-gradient);
+            color: var(--text-main);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 20px;
+            padding: 12px;
         }
 
         .game-card {
-            background: #252538;
-            border-radius: 20px;
-            padding: 30px;
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 24px 20px;
             width: 100%;
-            max-width: 550px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            text-align: center;
-            position: relative;
+            max-width: 480px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
-        h1 {
-            color: #ff4757;
-            font-size: 2.2rem;
-            margin-bottom: 10px;
+        .brand-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ff4757, #ffa502);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .subtitle {
-            color: #a4b0be;
-            margin-bottom: 20px;
-            font-size: 0.95rem;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            text-align: left;
+            margin-top: -8px;
+            margin-bottom: 4px;
         }
 
         .screen {
             display: none;
+            flex-direction: column;
+            gap: 16px;
         }
 
         .screen.active {
-            display: block;
+            display: flex;
         }
 
         .config-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
             text-align: left;
-            margin-bottom: 15px;
         }
 
         .config-group label {
-            display: block;
-            font-size: 0.9rem;
-            color: #dcdde1;
-            margin-bottom: 5px;
+            font-size: 0.85rem;
+            color: var(--text-main);
             font-weight: 600;
         }
 
         .config-group input, .config-group select, .config-group textarea {
             width: 100%;
-            padding: 10px 14px;
-            border-radius: 8px;
-            border: 1px solid #3d3d5c;
-            background: #1e1e2f;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--card-border);
+            background: rgba(15, 23, 42, 0.6);
             color: #ffffff;
-            font-size: 1rem;
+            font-size: 0.95rem;
             outline: none;
-        }
-
-        .config-group textarea {
-            resize: vertical;
-            min-height: 70px;
+            transition: border-color 0.2s;
         }
 
         .config-group input:focus, .config-group select:focus, .config-group textarea:focus {
-            border-color: #ff4757;
+            border-color: var(--primary);
         }
 
         .checkbox-group {
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 10px;
+            margin-top: 4px;
         }
 
         .checkbox-group input {
-            width: auto;
-            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
         }
 
         .btn {
-            background: #ff4757;
+            background: var(--primary);
             color: white;
             border: none;
-            padding: 14px 28px;
-            font-size: 1rem;
-            font-weight: bold;
-            border-radius: 12px;
+            padding: 16px 20px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            border-radius: var(--radius-md);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
             width: 100%;
-            margin-top: 10px;
-            -webkit-tap-highlight-color: transparent;
+            margin: 0 auto;
+            box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
         }
 
-        .btn:hover {
-            background: #ff6b81;
-            transform: translateY(-2px);
+        .btn:active {
+            transform: scale(0.97);
         }
 
-        .btn-success { background: #2ed573; }
-        .btn-success:hover { background: #7bed9f; }
+        .btn-success {
+            background: var(--success);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
 
-        .btn-warning { background: #ffa502; }
-        .btn-warning:hover { background: #eccc68; }
+        .btn-warning {
+            background: var(--warning);
+            color: #0f172a;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
 
         .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
         }
 
-        .btn-group .btn { margin-top: 0; }
-
         .sound-toggle-btn {
-            background: #34344e;
-            border: 1px solid #3d3d5c;
-            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
             padding: 8px 14px;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: bold;
-            transition: background 0.2s;
-            -webkit-tap-highlight-color: transparent;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
 
-        .sound-toggle-btn:hover {
-            background: #3d3d5c;
+        .score-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 8px;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--card-border);
+        }
+
+        .score-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            padding: 4px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .score-box.active-team-score {
+            border: 1px solid var(--primary);
+            background: rgba(255, 71, 87, 0.1);
+        }
+
+        .score-box strong {
+            font-size: 1.1rem;
+            color: var(--text-main);
         }
 
         .game-header {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 14px;
+            border-radius: var(--radius-sm);
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            background: #1e1e2f;
-            padding: 12px 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+            gap: 10px;
+            border: 1px solid var(--card-border);
         }
 
         .game-header-top {
@@ -166,113 +229,172 @@
         }
 
         .player-turn-badge {
-            background: #ff4757;
+            background: var(--primary);
             color: #fff;
             padding: 6px 12px;
             border-radius: 8px;
-            font-weight: bold;
-            font-size: 1.1rem;
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-top: 4px;
         }
 
         .timer {
             font-size: 1.8rem;
-            font-weight: bold;
-            color: #ffa502;
-            transition: color 0.3s;
+            font-weight: 900;
+            color: var(--warning);
         }
 
         .timer.warning {
-            color: #ff4757;
+            color: var(--primary);
             animation: pulse 0.5s infinite alternate;
         }
 
-        @keyframes pulse {
-            from { transform: scale(1); }
-            to { transform: scale(1.08); }
+        .progress-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
         }
 
-        .score-board {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            background: #1e1e2f;
-            padding: 10px;
-            border-radius: 10px;
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--warning);
+            width: 100%;
+            transition: width 1s linear, background-color 0.3s;
+        }
+
+        .progress-bar-fill.warning {
+            background: var(--primary);
         }
 
         .round-badge {
-            display: inline-block;
-            background: #70a1ff;
-            color: #1e1e2f;
-            padding: 4px 12px;
+            align-self: center;
+            background: rgba(112, 161, 255, 0.15);
+            color: #70a1ff;
+            border: 1px solid rgba(112, 161, 255, 0.3);
+            padding: 6px 16px;
             border-radius: 20px;
-            font-weight: bold;
+            font-weight: 700;
             font-size: 0.85rem;
-            margin-bottom: 15px;
         }
 
         .word-box {
             background: #ffffff;
-            color: #2f3542;
-            padding: 40px 20px;
-            border-radius: 16px;
+            color: #0f172a;
+            padding: 30px 16px;
+            border-radius: var(--radius-md);
             font-size: 1.8rem;
-            font-weight: bold;
+            font-weight: 800;
             min-height: 160px;
+            width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 15px 0;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            word-break: break-word;
+        }
+
+        #card-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
         }
 
         .rules-hint {
-            font-size: 0.85rem;
-            color: #ced6e0;
-            background: #34344e;
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            background: rgba(15, 23, 42, 0.5);
+            padding: 14px;
+            border-radius: var(--radius-sm);
             text-align: left;
+            line-height: 1.6;
+            border: 1px solid var(--card-border);
+        }
+
+        .rule-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 6px;
+            gap: 8px;
+        }
+
+        .info-bubble {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .info-bubble .tooltip-text {
+            visibility: hidden;
+            width: 220px;
+            background-color: #0f172a;
+            color: #f8fafc;
+            text-align: left;
+            border-radius: 8px;
+            padding: 10px;
+            position: absolute;
+            z-index: 10;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-85%);
+            opacity: 0;
+            transition: opacity 0.2s;
+            font-size: 0.75rem;
+            font-weight: normal;
+            border: 1px solid var(--primary);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+            line-height: 1.3;
+            pointer-events: none;
+        }
+
+        .info-bubble:hover .tooltip-text, .info-bubble:focus .tooltip-text {
+            visibility: visible;
+            opacity: 1;
         }
 
         .stats-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 15px 0;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            margin-top: 8px;
         }
 
         .stats-table th, .stats-table td {
-            padding: 8px 12px;
-            border: 1px solid #3d3d5c;
+            padding: 10px;
+            border: 1px solid var(--card-border);
             text-align: left;
         }
 
         .stats-table th {
-            background: #1e1e2f;
-            color: #ff4757;
+            background: rgba(15, 23, 42, 0.8);
+            color: var(--primary);
         }
 
         .version-footer {
-            font-size: 0.75rem;
-            color: #57606f;
-            margin-top: 25px;
-            text-align: center;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            opacity: 0.6;
+            margin-top: 8px;
         }
     </style>
 </head>
 <body>
 
 <div class="game-card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <h1 style="margin-bottom: 0;">TIME'S UP!</h1>
-        <button class="sound-toggle-btn" id="sound-btn" onclick="toggleSound()">🔊 Son ON</button>
+    <div class="brand-header">
+        <h1 class="app-title">Time's Up!</h1>
+        <button class="sound-toggle-btn" id="sound-btn" onclick="toggleSound()">🔊 Son</button>
     </div>
-    <p class="subtitle" id="ui-subtitle">Choisissez votre édition préférée</p>
 
-    <!-- Écran d'accueil -->
+    <!-- Écran d'accueil (Configurateur) -->
     <div id="start-screen" class="screen active">
+        <p class="subtitle" id="ui-subtitle">Choisissez votre édition préférée</p>
+
         <div class="config-group">
             <label for="lang-select" id="ui-label-lang">Langue du jeu :</label>
             <select id="lang-select" onchange="changeLanguage()">
@@ -283,23 +405,16 @@
         </div>
 
         <div class="config-group">
-            <label for="mode-select" id="ui-label-mode">Mode de jeu :</label>
-            <select id="mode-select" onchange="toggleExpertMode()">
-                <option value="standard">Standard (Équipes simples)</option>
-                <option value="expert">Expert (Membres & Stats individuelles)</option>
-            </select>
+            <label for="team-count-select" id="ui-label-team-count">Nombre d'équipes (2 à 5) :</label>
+            <select id="team-count-select" onchange="renderExpertFields()"></select>
         </div>
 
-        <div id="expert-config-container" style="display: none;">
-            <div class="config-group">
-                <label id="ui-label-team1-players">Membres Équipe 1 (séparés par une virgule) :</label>
-                <input type="text" id="team1-players-input" placeholder="Ex: Alice, Bob, Charlie">
-            </div>
-            <div class="config-group">
-                <label id="ui-label-team2-players">Membres Équipe 2 (séparés par une virgule) :</label>
-                <input type="text" id="team2-players-input" placeholder="Ex: David, Eva, Frank">
-            </div>
+        <div class="config-group">
+            <label for="mode-select" id="ui-label-mode">Mode de jeu :</label>
+            <select id="mode-select" onchange="toggleExpertMode()"></select>
         </div>
+
+        <div id="expert-config-container" style="display: none; gap: 10px; flex-direction: column;"></div>
 
         <div class="config-group">
             <label for="theme-select" id="ui-label-theme">Thématique / Édition :</label>
@@ -309,10 +424,10 @@
         <div class="config-group">
             <div class="checkbox-group">
                 <input type="checkbox" id="custom-words-toggle" onchange="toggleCustomWords()">
-                <label for="custom-words-toggle" id="ui-label-custom-toggle" style="margin-bottom: 0; cursor: pointer;">Ajouter mes propres mots</label>
+                <label for="custom-words-toggle" id="ui-label-custom-toggle" style="cursor: pointer;">Ajouter mes propres mots</label>
             </div>
-            <div id="custom-words-container" style="display: none; margin-top: 10px;">
-                <textarea id="custom-words-input" placeholder="Saisissez vos mots séparés par une virgule ou un retour à la ligne..."></textarea>
+            <div id="custom-words-container" style="display: none; margin-top: 6px;">
+                <textarea id="custom-words-input" placeholder="Saisissez vos mots séparés par une virgule..."></textarea>
             </div>
         </div>
 
@@ -328,23 +443,27 @@
 
         <div class="rules-hint" id="ui-rules-hint"></div>
 
-        <button class="btn" id="ui-btn-start" onclick="startGame()">Lancer la partie</button>
+        <button class="btn" id="ui-btn-start" onclick="startGame()">⚡ Lancer la partie</button>
     </div>
 
     <!-- Écran de jeu -->
     <div id="game-screen" class="screen">
-        <div class="score-board">
-            <div><span id="ui-team1-label">Équipe 1</span>: <strong id="score-1">0</strong> pts</div>
-            <div><span id="ui-team2-label">Équipe 2</span>: <strong id="score-2">0</strong> pts</div>
-        </div>
+        <div class="score-board" id="game-score-board"></div>
 
         <div class="game-header">
             <div class="game-header-top">
-                <div><span id="ui-turn-label">Tour :</span> <span id="current-team-display">Équipe 1</span></div>
+                <div style="font-size: 0.9rem; color: var(--text-muted);">
+                    <span id="ui-turn-label">Tour :</span> <strong id="current-team-display" style="color: var(--text-main);">Équipe 1</strong>
+                </div>
                 <div class="timer" id="timer-display">30s</div>
             </div>
-            <div id="expert-player-banner" style="display: none;">
-                <span id="ui-active-player-label">C'est au tour de :</span>
+            
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="timer-bar"></div>
+            </div>
+
+            <div id="expert-player-banner" style="display: none; margin-top: 4px;">
+                <span id="ui-active-player-label" style="font-size: 0.8rem; color: var(--text-muted);">C'est au tour de :</span>
                 <div class="player-turn-badge" id="current-player-name">—</div>
             </div>
         </div>
@@ -352,51 +471,51 @@
         <div class="round-badge" id="round-display">Manche 1 : Description</div>
 
         <div id="card-area">
-            <button class="btn btn-warning" id="start-turn-btn" onclick="startTurn()">Démarrer le chrono</button>
+            <button class="btn btn-warning" id="start-turn-btn" onclick="startTurn()">▶️ Démarrer le chrono</button>
             <div class="word-box" id="word-display" style="display: none;">—</div>
         </div>
 
         <div class="btn-group" id="action-btns" style="display: none;">
-            <button class="btn btn-warning" id="ui-btn-skip" onclick="skipWord()">Passer</button>
-            <button class="btn btn-success" id="ui-btn-found" onclick="validateWord()">Trouvé !</button>
+            <button class="btn btn-warning" id="ui-btn-skip" onclick="skipWord()">↩️ Passer</button>
+            <button class="btn btn-success" id="ui-btn-found" onclick="validateWord()">✅ Trouvé !</button>
         </div>
     </div>
 
     <!-- Écran de fin -->
     <div id="round-end-screen" class="screen">
-        <h2 id="round-end-title" style="margin-bottom: 15px;">Fin de la manche !</h2>
-        <div class="score-board" style="margin: 20px 0;">
-            <div><span id="ui-end-team1-label">Équipe 1</span>: <strong id="end-score-1">0</strong></div>
-            <div><span id="ui-end-team2-label">Équipe 2</span>: <strong id="end-score-2">0</strong></div>
-        </div>
+        <h2 id="round-end-title" style="font-size: 1.3rem;">Fin de la manche !</h2>
+        <div class="score-board" id="end-score-board"></div>
 
         <div id="stats-container" style="display: none;">
-            <h3 style="color: #ffa502; margin-top: 15px;" id="ui-stats-title">Statistiques des Joueurs</h3>
+            <h3 style="color: var(--warning); font-size: 1rem;" id="ui-stats-title">Statistiques des Joueurs</h3>
             <table class="stats-table">
                 <thead>
                     <tr>
                         <th id="ui-th-player">Joueur</th>
                         <th id="ui-th-team">Équipe</th>
-                        <th id="ui-th-score">Mots Trouvés</th>
+                        <th id="ui-th-score">Mots</th>
                     </tr>
                 </thead>
                 <tbody id="stats-table-body"></tbody>
             </table>
         </div>
 
-        <button class="btn" id="next-round-btn" onclick="nextRound()">Manche suivante</button>
+        <button class="btn" id="next-round-btn" onclick="nextRound()">Manche suivante ➡️</button>
     </div>
 
-    <div class="version-footer">version 1.02.08</div>
+    <div class="version-footer">version 1.03.05 Ultimate Edition by Arnaud Arnaud</div>
 </div>
 
 <script>
-    // --- MOTEUR AUDIO COMPATIBLE SAFARI iOS SANS INTERRUPTIONS ---
+    // --- MOTEUR AUDIO PCM EMBARQUÉ ---
     let soundEnabled = true;
     let audioCtx = null;
-    let timerTickAudioPlayer = null; // Élément audio réutilisé pour le chrono iOS
+    let timerTickAudioPlayer = null;
 
-    // Générateur d'ondes douces au format Data-URI (Audio PCM 8-bit doux)
+    function triggerVibration(ms = 30) {
+        if (navigator.vibrate) navigator.vibrate(ms);
+    }
+
     function createSoftWavURI(freq, durationMs, envelope = 'bell') {
         const sampleRate = 11025;
         const numSamples = Math.floor(sampleRate * (durationMs / 1000));
@@ -414,29 +533,22 @@
 
         for (let i = 0; i < numSamples; i++) {
             const t = i / sampleRate;
-            let gain = Math.exp(-3 * (i / numSamples)); // Atténuation douce
-
-            if (envelope === 'soft') {
-                gain = Math.sin(Math.PI * (i / numSamples)); // Cloche douce
-            }
-
+            let gain = Math.exp(-3 * (i / numSamples));
+            if (envelope === 'soft') gain = Math.sin(Math.PI * (i / numSamples));
             const sample = Math.sin(2 * Math.PI * freq * t) * gain;
             wavBuffer[44 + i] = Math.floor((sample + 1) * 127.5);
         }
 
         let binary = '';
-        for (let i = 0; i < wavBuffer.length; i++) {
-            binary += String.fromCharCode(wavBuffer[i]);
-        }
+        for (let i = 0; i < wavBuffer.length; i++) binary += String.fromCharCode(wavBuffer[i]);
         return 'data:audio/wav;base64,' + btoa(binary);
     }
 
-    // Sons doux pré-calculés
     const softSounds = {
-        success: createSoftWavURI(523.25, 180, 'bell'),  // Do doux (Clochette)
-        skip: createSoftWavURI(220, 100, 'soft'),        // Pop doux
-        tickWarning: createSoftWavURI(600, 40, 'soft'),  // Clic métronome doux
-        endTurn: createSoftWavURI(261.63, 300, 'bell')    // Carillon doux de fin
+        success: createSoftWavURI(523.25, 180, 'bell'),
+        skip: createSoftWavURI(220, 100, 'soft'),
+        tickWarning: createSoftWavURI(600, 40, 'soft'),
+        endTurn: createSoftWavURI(261.63, 300, 'bell')
     };
 
     function playSoundNative(soundUri) {
@@ -444,20 +556,14 @@
         try {
             const audio = new Audio(soundUri);
             audio.volume = 0.5;
-            audio.play().catch(() => {
-                playWebAudioFallback();
-            });
+            audio.play().catch(() => playWebAudioFallback());
         } catch(e) {}
     }
 
     function playWebAudioFallback() {
         try {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
             osc.type = 'sine';
@@ -471,7 +577,6 @@
         } catch(e) {}
     }
 
-    // Déblocage universel du canal audio sur iOS Safari lors d'un clic
     function unlockIosAudioPool() {
         if (!timerTickAudioPlayer) {
             timerTickAudioPlayer = new Audio(softSounds.tickWarning);
@@ -488,9 +593,7 @@
             const AudioContextClass = window.AudioContext || window.webkitAudioContext;
             if (AudioContextClass) audioCtx = new AudioContextClass();
         }
-        if (audioCtx && audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     }
 
     ['touchstart', 'touchend', 'click'].forEach(evt => {
@@ -499,14 +602,13 @@
 
     function toggleSound() {
         soundEnabled = !soundEnabled;
-        document.getElementById('sound-btn').innerText = soundEnabled ? '🔊 Son ON' : '🔇 Son OFF';
+        document.getElementById('sound-btn').innerText = soundEnabled ? '🔊 Son' : '🔇 Muet';
         if (soundEnabled) unlockIosAudioPool();
     }
 
     function playSoundSuccess() { playSoundNative(softSounds.success); }
     function playSoundSkip() { playSoundNative(softSounds.skip); }
     
-    // Bip doux du chrono des 10 dernières secondes garanti sur iOS Safari
     function playSoundTick() {
         if (!soundEnabled) return;
         if (timerTickAudioPlayer) {
@@ -527,30 +629,40 @@
         fr: {
             subtitle: "Choisissez votre édition préférée",
             langLabel: "Langue du jeu :",
+            teamCountLabel: "Nombre d'équipes (2 à 5) :",
+            teamOptions: { 2: "2 Équipes", 3: "3 Équipes", 4: "4 Équipes", 5: "5 Équipes" },
+            placeholderExample: "Ex: Joueur {T}A, Joueur {T}B",
             modeLabel: "Mode de jeu :",
-            team1PlayersLabel: "Membres Équipe 1 (séparés par une virgule) :",
-            team2PlayersLabel: "Membres Équipe 2 (séparés par une virgule) :",
+            modes: {
+                standard: "Standard (Équipes simples)",
+                expert: "Expert (Membres & Stats)"
+            },
             themeLabel: "Thématique / Édition :",
             customToggleLabel: "Ajouter mes propres mots",
-            customPlaceholder: "Entrez vos mots séparés par une virgule ou un retour à la ligne...",
+            customPlaceholder: "Entrez vos mots séparés par une virgule...",
             countLabel: "Nombre de cartes (10 à 100) :",
             timerLabel: "Durée du chrono (secondes) :",
-            rulesHint: "<strong>Règles des manches :</strong><br>• <strong>M1 :</strong> Description libre<br>• <strong>M2 :</strong> Un seul mot<br>• <strong>M3 :</strong> Mime & bruitages",
-            btnStart: "Lancer la partie",
-            btnStartChrono: "Démarrer le chrono",
-            btnSkip: "Passer",
-            btnFound: "Trouvé !",
-            team1: "Équipe 1",
-            team2: "Équipe 2",
+            rulesTitle: "Règles des manches :",
+            r1Title: "M1 : Description libre",
+            r1Tooltip: "Décrivez le mot librement sans le prononcer ni le traduire. Les coéquipiers peuvent proposer autant de réponses qu'ils le veulent.",
+            r2Title: "M2 : Un seul mot",
+            r2Tooltip: "Vous ne pouvez prononcer qu'UN SEUL mot d'indice par carte. Vos coéquipiers n'ont droit qu'à UNE SEULE proposition.",
+            r3Title: "M3 : Mime & bruitages",
+            r3Tooltip: "Interdiction de parler ! Mimez et utilisez des bruitages uniquement. Les coéquipiers n'ont droit qu'à UNE SEULE proposition.",
+            btnStart: "⚡ Lancer la partie",
+            btnStartChrono: "▶️ Démarrer le chrono",
+            btnSkip: "↩️ Passer",
+            btnFound: "✅ Trouvé !",
+            team: "Équipe",
             turn: "Tour :",
             activePlayerLabel: "C'est au tour de :",
             statsTitle: "Statistiques des Joueurs",
             thPlayer: "Joueur",
             thTeam: "Équipe",
-            thScore: "Mots Trouvés",
-            roundEndTitle: "Fin de la Manche",
-            nextRoundBtn: "Manche suivante",
-            restartBtn: "Recommencer une partie",
+            thScore: "Mots",
+            roundEndTitle: "Fin de la manche !",
+            nextRoundBtn: "Manche suivante ➡️",
+            restartBtn: "🔄 Recommencer une partie",
             timeUpAlert: "Temps écoulé ! Au tour de",
             draw: "Match Nul !",
             win: "l'emporte !",
@@ -562,32 +674,42 @@
         en: {
             subtitle: "Choose your favorite edition",
             langLabel: "Game language:",
-            modeLabel: "Game Mode:",
-            team1PlayersLabel: "Team 1 Members (comma separated):",
-            team2PlayersLabel: "Team 2 Members (comma separated):",
+            teamCountLabel: "Number of teams (2 to 5):",
+            teamOptions: { 2: "2 Teams", 3: "3 Teams", 4: "4 Teams", 5: "5 Teams" },
+            placeholderExample: "Ex: Player {T}A, Player {T}B",
+            modeLabel: "Game mode:",
+            modes: {
+                standard: "Standard (Simple Teams)",
+                expert: "Expert (Members & Stats)"
+            },
             themeLabel: "Theme / Edition:",
             customToggleLabel: "Add my custom words",
-            customPlaceholder: "Type your words separated by commas or line breaks...",
+            customPlaceholder: "Type your words separated by commas...",
             countLabel: "Number of cards (10 to 100):",
             timerLabel: "Timer duration (seconds):",
-            rulesHint: "<strong>Round rules:</strong><br>• <strong>R1:</strong> Free description<br>• <strong>R2:</strong> One word only<br>• <strong>R3:</strong> Mime & sounds",
-            btnStart: "Start game",
-            btnStartChrono: "Start timer",
-            btnSkip: "Pass",
-            btnFound: "Got it!",
-            team1: "Team 1",
-            team2: "Team 2",
+            rulesTitle: "Round rules:",
+            r1Title: "R1: Free description",
+            r1Tooltip: "Describe the card freely without saying or translating the word. Teammates can guess as many times as they want.",
+            r2Title: "R2: Single word",
+            r2Tooltip: "You can only say ONE clue word per card. Your teammates are allowed only ONE guess per card.",
+            r3Title: "R3: Mime & sounds",
+            r3Tooltip: "No talking allowed! Use mimes and sound effects only. Teammates are allowed only ONE guess per card.",
+            btnStart: "⚡ Start game",
+            btnStartChrono: "▶️ Start timer",
+            btnSkip: "↩️ Pass",
+            btnFound: "✅ Got it!",
+            team: "Team",
             turn: "Turn:",
             activePlayerLabel: "It is turn of:",
-            statsTitle: "Player Statistics",
+            statsTitle: "Player statistics",
             thPlayer: "Player",
             thTeam: "Team",
-            thScore: "Words Found",
-            roundEndTitle: "End of Round",
-            nextRoundBtn: "Next Round",
-            restartBtn: "Play Again",
+            thScore: "Words",
+            roundEndTitle: "End of round!",
+            nextRoundBtn: "Next round ➡️",
+            restartBtn: "🔄 Play again",
             timeUpAlert: "Time's up! Turning to",
-            draw: "It's a Tie!",
+            draw: "It's a tie!",
             win: "wins!",
             victory: "Victory!",
             rounds: { 1: "Round 1: Free Description", 2: "Round 2: Single Word", 3: "Round 3: Mime & Sounds" },
@@ -597,30 +719,40 @@
         es: {
             subtitle: "Elige tu edición favorita",
             langLabel: "Idioma del juego:",
+            teamCountLabel: "Número de equipos (2 a 5):",
+            teamOptions: { 2: "2 Equipos", 3: "3 Equipos", 4: "4 Equipos", 5: "5 Equipos" },
+            placeholderExample: "Ex: Jugador {T}A, Jugador {T}B",
             modeLabel: "Modo de juego:",
-            team1PlayersLabel: "Miembros Equipo 1 (separados por coma):",
-            team2PlayersLabel: "Miembros Equipo 2 (separados por coma):",
+            modes: {
+                standard: "Estándar (Equipos simples)",
+                expert: "Experto (Miembros y Stats)"
+            },
             themeLabel: "Temática / Edición:",
             customToggleLabel: "Añadir mis propias palabras",
-            customPlaceholder: "Escribe tus palabras separadas por comas o saltos de línea...",
+            customPlaceholder: "Escribe tus palabras separadas por comas...",
             countLabel: "Número de cartas (10 a 100):",
             timerLabel: "Duración del temporizador (segundos):",
-            rulesHint: "<strong>Reglas de las rondas:</strong><br>• <strong>R1:</strong> Descripción libre<br>• <strong>R2:</strong> Una sola palabra<br>• <strong>R3:</strong> Mímica y sonidos",
-            btnStart: "Iniciar juego",
-            btnStartChrono: "Iniciar temporizador",
-            btnSkip: "Pasar",
-            btnFound: "¡Conseguido!",
-            team1: "Equipo 1",
-            team2: "Equipo 2",
+            rulesTitle: "Reglas de las rondas:",
+            r1Title: "R1: Descripción libre",
+            r1Tooltip: "Describe la palabra libremente sin decirla ni traducirla. Tus compañeros pueden adivinar tantas veces como quieran.",
+            r2Title: "R2: Una sola palabra",
+            r2Tooltip: "Solo puedes decir UNA palabra de pista por carta. Tus compañeros solo tienen UN intento de respuesta.",
+            r3Title: "R3: Mímica y sonidos",
+            r3Tooltip: "¡Prohibido hablar! Usa solo mímica y efectos de sonido. Tus compañeros solo tienen UN intento de respuesta.",
+            btnStart: "⚡ Iniciar juego",
+            btnStartChrono: "▶️ Iniciar temporizador",
+            btnSkip: "↩️ Pasar",
+            btnFound: "✅ ¡Conseguido!",
+            team: "Equipo",
             turn: "Turno:",
             activePlayerLabel: "Es el turno de:",
-            statsTitle: "Estadísticas de Jugadores",
+            statsTitle: "Estadísticas de jugadores",
             thPlayer: "Jugador",
             thTeam: "Equipo",
-            thScore: "Palabras Encontradas",
-            roundEndTitle: "¡Fin de la Ronda!",
-            nextRoundBtn: "Siguiente Ronda",
-            restartBtn: "Jugar de nuevo",
+            thScore: "Palabras",
+            roundEndTitle: "¡Fin de la ronda!",
+            nextRoundBtn: "Siguiente ronda ➡️",
+            restartBtn: "🔄 Jugar de nuevo",
             timeUpAlert: "¡Tiempo agotado! Turno de",
             draw: "¡Empate!",
             win: "¡gana!",
@@ -642,7 +774,7 @@
             travel: ["France", "Italie", "Japon", "États-Unis", "Brésil", "Australie", "Égypte", "Canada", "Mexique", "Chine", "Inde", "Espagne", "Grèce", "Thaïlande", "Maroc", "Pérou", "Islande", "Norvège", "Afrique du Sud", "Argentine", "Paris", "Tokyo", "New York", "Rome", "Londres", "Rio de Janeiro", "Sydney", "Le Caire", "Pékin", "Bangkok", "Tour Eiffel", "Statue de la Liberté", "Grande Muraille de Chine", "Pyramides de Gizeh", "Colisée", "Taj Mahal", "Machu Picchu", "Christ Rédempteur", "Pétra", "Acropole d'Athènes", "Passeport", "Valise", "Boussole", "Carte du monde", "Avion", "Sac à dos", "Décalage horaire", "Souvenir", "Billet d'avion", "Appareil photo", "Bateau de croisière", "Hôtel", "Auberge de jeunesse", "Guide touristique", "Escale", "Douane", "Visa", "Monnaie étrangère", "Crème solaire", "Lunettes de soleil", "Gondole de Venise", "Safari", "Aurore boréale", "Plongée sous-marine", "Randonnée en montagne", "Volcano", "Plage de sable blanc", "Désert du Sahara", "Jungle amazonienne", "Fjord", "Allemagne", "Portugal", "Pays-Bas", "Suisse", "Suède", "Chili", "Colombie", "Vietnam", "Indonésie", "Nouvelle-Zélande", "Dubaï", "Istanbul", "Barcelone", "Venise", "Amsterdam", "Los Angeles", "Las Vegas", "San Francisco", "Montréal", "Kyoto", "Big Ben", "Mont Fuji", "Grand Canyon", "Chutes du Niagara", "Mont Everest", "Opéra de Sydney", "Burj Khalifa", "Sagrada Familia", "Mont Saint-Michel"],
             food: ["Pizza", "Burger", "Sushi", "Pâtes Carbonara", "Paëlla", "Tacos", "Couscous", "Fondue Savoyarde", "Raclette", "Crêpe", "Croissant", "Baguette", "Macaron", "Gaufre", "Tiramisu", "Eclair au chocolat", "Tartiflette", "Boeuf Bourguignon", "Cassoulet", "Quiche Lorraine", "Fromage", "Chocolat", "Huile d'olive", "Ail", "Épices", "Piment", "Avocat", "Saumon", "Truffe", "Basilic", "Baguettes chinoises", "Poêle", "Four", "Casserole", "Chef cuisinier", "Menu", "Recette", "Tablier", "Fouet", "Rouleau à pâtisserie", "Guacamole", "Hummus", "Dim Sum", "Ramen", "Pad Thaï", "Kebab", "Fish and Chips", "Nems", "Falafel", "Curry", "Camembert", "Roquefort", "Mozzarella", "Parmesan", "Cheddar", "Gorgonzola", "Brie", "Reblochon", "Feta", "Emmental", "Profiteroles", "Crème brûlée", "Tarte Tatin", "Mousse au chocolat", "Mille-feuille", "Paris-Brest", "Panna Cotta", "Cheesecake", "Churros", "Donut", "Vin rouge", "Champagne", "Café Espresso", "Thé vert", "Jus de fruits", "Cocktail", "Limonade", "Cidre", "Bière", "Eau gazeuse", "Couteau de chef", "Planche à découper", "Spatule", "Tire-bouchon", "Décapsuleur", "Salière", "Poivrier", "Balance de cuisine", "Mixeur", "Cocotte-minute", "Saucisson", "Jambon de Bayonne", "Foie gras", "Huîtres", "Caviar", "Homard", "Crevettes", "Moules frites", "Escargots", "Soupe à l'oignon"],
             music: ["Guitare", "Piano", "Batterie", "Violon", "Trompette", "Microphone", "Casque audio", "Saxophone", "Flûte", "Basse", "Rock", "Pop", "Rap", "Jazz", "Musique Classique", "Electro", "Reggae", "Heavy Metal", "Blues", "Funk", "Michael Jackson", "Beyoncé", "Freddie Mercury", "Celine Dion", "Eminem", "Daft Punk", "Mozart", "Beethoven", "The Beatles", "Elvis Presley", "Concert", "Festival", "Refrain", "Chorégraphie", "Disque d'or", "Studio d'enregistrement", "Partition", "Solfège", "Chef d'orchestre", "Comédie musicale", "Ampli", "Platine vinyle", "Enceinte Bluetooth", "Synthétiseur", "Harpe", "Ukulélé", "Accordéon", "Tambourin", "Xylophone", "Triangle", "Bob Marley", "David Bowie", "Madonna", "Rihanna", "Lady Gaga", "Coldplay", "Queen", "Rolling Stones", "AC/DC", "Nirvana", "Johnny Hallyday", "Edith Piaf", "Stromae", "Orelsan", "Angèle", "Bigflo et Oli", "Soprano", "Gims", "Jul", "Aya Nakamura", "Acoustique", "Playback", "DJ", "Chorale", "Opéra", "Symphonie", "Ballade", "Solo de guitare", "Beatbox", "Auto-Tune", "Acrobate de scène", "Coulisses", "Billet de concert", "Tournée mondiale", "Clip vidéo", "Bande originale", "Hymne", "Rhythm and blues", "Country", "Ska", "Batterie électronique", "Pédale d'effet", "Métronome", "Diapason", "Cordes de guitare", "Baguettes de batterie", "Pupitre", "Micro HF", "Table de mixage", "Console"],
-            sports: ["Football", "Basketball", "Tennis", "Natation", "Rugby", "Judo", "Athletisme", "Cyclisme", "Formule 1", "Boxe", "Golf", "Gymnastique", "Handball", "Volleyball", "Ski alpin", "Snowboard", "Surfing", "Skateboard", "Équitation", "Escrime", "Ballon", "Raquette", "Piscine", "Stade", "Maillot", "Médaille d'or", "Sifflet d'arbitre", "Chronomètre", "Ring", "Court de tennis", "Kylian Mbappé", "LeBron James", "Rafael Nadal", "Usain Bolt", "Teddy Riner", "Serena Williams", "Cristiano Ronaldo", "Lionel Messi", "Michael Jordan", "Roger Federer", "Jeux Olympiques", "Coupe du Monde", "Grand Chelem", "Carton rouge", "Tir au but", "Marathon", "Tour de France", "Super Bowl", "NBA Finals", "Grand Prix F1", "Crampons", "Gants de boxe", "Casque de vélo", "Protège-dents", "Kimono", "Combinaison de plongée", "Bâtons de ski", "Planche de surf", "Palmes", "Putter", "Arbitre", "Entraîneur", "Supporter", "Podium", "Hymne national", "Trophée", "Prolongations", "Mi-temps", "Penalty", "Hors-jeu", "Antoine Griezmann", "Zinedine Zidane", "Novak Djokovic", "Lewis Hamilton", "Stephen Curry", "Tyson Fury", "Conor McGregor", "Simone Biles", "Katie Ledecky", "Clarisse Agbegnenou", "Escalade", "Tir à l'arc", "Badminton", "Ping-pong", "Aviron", "Canoë-kayak", "Water-polo", "Baseball", "Football américain", "Hockey sur glace", "Ligne d'arrivée", "Faux départ", "Record du monde", "Dopaje", "Espíritu deportivo", "Fair-play", "Suplente", "Capitaine", "Vestiaire", "Sponsor"]
+            sports: ["Football", "Basketball", "Tennis", "Natation", "Rugby", "Judo", "Athlétisme", "Cyclisme", "Formule 1", "Boxe", "Golf", "Gymnastique", "Handball", "Volleyball", "Ski alpin", "Snowboard", "Surfing", "Skateboarding", "Équitation", "Escrime", "Ballon", "Raquette", "Piscine", "Stade", "Maillot", "Médaille d'or", "Sifflet d'arbitre", "Chronomètre", "Ring", "Court de tennis", "Kylian Mbappé", "LeBron James", "Rafael Nadal", "Usain Bolt", "Teddy Riner", "Serena Williams", "Cristiano Ronaldo", "Lionel Messi", "Michael Jordan", "Roger Federer", "Jeux Olympiques", "Coupe du Monde", "Grand Chelem", "Carton rouge", "Tir au but", "Marathon", "Tour de France", "Super Bowl", "NBA Finals", "Grand Prix F1", "Crampons", "Gants de boxe", "Casque de vélo", "Protège-dents", "Kimono", "Combinaison de plongée", "Bâtons de ski", "Planche de surf", "Palmes", "Putter", "Arbitre", "Entraîneur", "Supporter", "Podium", "Hymne national", "Trophée", "Prolongations", "Mi-temps", "Penalty", "Hors-jeu", "Antoine Griezmann", "Zinedine Zidane", "Novak Djokovic", "Lewis Hamilton", "Stephen Curry", "Tyson Fury", "Conor McGregor", "Simone Biles", "Katie Ledecky", "Clarisse Agbegnenou", "Escalade", "Tir à l'arc", "Badminton", "Ping-pong", "Aviron", "Canoë-kayak", "Water-polo", "Baseball", "Football américain", "Hockey sur glace", "Ligne d'arrivée", "Faux départ", "Record du monde", "Dopaje", "Espíritu deportivo", "Fair-play", "Suplente", "Capitaine", "Vestiaire", "Sponsor"]
         },
         en: {
             kids: ["Cat", "Dog", "Cow", "Pig", "Lion", "Elephant", "Monkey", "Duck", "Bird", "Fish", "Banana", "Apple", "Cake", "Ice Cream", "Pizza", "Bread", "Milk", "Chocolate", "Strawberry", "Carrot", "Car", "Bicycle", "Train", "Airplane", "Boat", "Rocket", "Fire Truck", "Tractor", "Bus", "Motorcycle", "Bed", "Chair", "Table", "Television", "Toothbrush", "House", "Sun", "Rain", "Snow", "Cloud", "Ball", "Doll", "Book", "Pencil", "Scissors", "Hat", "Shoe", "Coat", "Slide", "Swing", "Giraffe", "Bear", "Rabbit", "Frog", "Turtle", "Butterfly", "Bee", "Dolphin", "Horse", "Sheep", "Lollipop", "Candy", "Orange Juice", "Spoon", "Fork", "Plate", "Glass", "Napkin", "Pajamas", "Sock", "Flower", "Tree", "Moon", "Star", "Sea", "Sand", "Seashell", "Sandcastle", "Snowman", "Gift", "Teddy Bear", "Pacifier", "Baby Bottle", "Paintbrush", "Paint", "Drum", "Trumpet", "Guitar", "Clock", "Mirror", "Soap", "Bathtub", "Comb", "Backpack", "Scooter", "Schoolbag", "Cap", "Glasses", "Ball", "Lego"],
@@ -665,16 +797,17 @@
             starwars: ["Luke Skywalker", "Darth Vader", "Princesa Leia", "Han Solo", "Chewbacca", "Yoda", "Obi-Wan Kenobi", "Lando Calrissian", "Emperador Palpatine", "Boba Fett", "Rey", "Finn", "Kylo Ren", "Grogu", "El Mandaloriano", "Ahsoka Tano", "Poe Dameron", "Mace Windu", "Conde Dooku", "General Grievous", "Darth Maul", "Qui-Gon Jinn", "Anakin Skywalker", "Padmé Amidala", "Grand Moff Tarkin", "Jabba el Hutt", "Capitana Phasma", "Cassian Andor", "Jyn Erso", "K-2SO", "Espada láser azul", "Espada láser roja", "Espada láser verde", "Estrella de la Muerte", "Halcón Milenario", "Ala-X", "Caza TIE", "Blaster", "Detonador térmico", "Bastón de Rey", "Tatooine", "Endor", "Hoth", "Coruscant", "Dagobah", "Mustafar", "Jakku", "Naboo", "Kamino", "Geonosis", "La Fuerza", "Lado Oscuro", "R2-D2", "C-3PO", "BB-8", "Stormtrooper", "Clonetrooper", "Ewok", "Wookiee", "Jawa", "Reptador de las Arenas", "AT-AT", "AT-ST", "Moto Jet", "Destructor Estelar", "Holocrón", "Código Jedi", "Orden 66", "Consejo Jedi", "Academia Sith", "Tanque de Bacta", "Casco de Boba Fett", "Beskar", "Darksaber", "Esclavo I", "Razor Crest", "Interceptor TIE", "Ala-A", "Ala-Y", "Súper Destructor Estelar", "Sarlacc", "Bantha", "Tauntaun", "Wampa", "Rodiano", "Twi'lek", "Gungan", "Jar Jar Binks", "Sebulba", "Watto", "Darth Plagueis"],
             travel: ["Francia", "Italia", "Japón", "Estados Unidos", "Brasil", "Australia", "Egipto", "Canadá", "México", "China", "India", "España", "Grecia", "Tailandia", "Maroc", "Perú", "Islandia", "Noruega", "Afrique du Sud", "Argentina", "París", "Tokyo", "Nueva York", "Rome", "Londres", "Río de Janeiro", "Sydney", "El Cairo", "Pekín", "Bangkok", "Torre Eiffel", "Estatua de la Libertad", "Gran Muralla China", "Pirámides de Giza", "Coliseo", "Taj Mahal", "Machu Picchu", "Christ Rédempteur", "Pétra", "Acropole d'Athènes", "Pasaporte", "Maleta", "Brújula", "Mapa del mundo", "Avión", "Mochila", "Jet Lag", "Recuerdo", "Billete de avión", "Cámara de fotos", "Crucero", "Hotel", "Hostal", "Guía turístico", "Escala", "Aduana", "Visado", "Moneda extranjera", "Protector solar", "Gafas de sol", "Góndola de Venecia", "Safari", "Aurora boreal", "Submarinismo", "Senderismo", "Volcán", "Playa de arena blanca", "Desierto del Sahara", "Selva Amazónica", "Fiordo", "Alemania", "Portugal", "Países Bajos", "Suiza", "Suecia", "Chile", "Colombia", "Vietnam", "Indonesia", "Nueva Zelanda", "Dubái", "Istanbul", "Barcelone", "Venise", "Ámsterdam", "Los Ángeles", "Las Vegas", "San Francisco", "Montreal", "Kioto", "Big Ben", "Monte Fuji", "Gran Cañón", "Cataratas del Niágara", "Monte Everest", "Ópera de Sídney", "Burj Khalifa", "Sagrada Familia", "Mont Saint-Michel"],
             food: ["Pizza", "Hamburguesa", "Sushi", "Pasta Carbonara", "Paella", "Tacos", "Cuscús", "Fondue de queso", "Raclette", "Crepe", "Croissant", "Baguette", "Macaron", "Gofrado", "Tiramisú", "Palo de catalán", "Tortitas", "Estofado de ternera", "Lasaña", "Quiche", "Queso", "Chocolate", "Aceite de oliva", "Ajo", "Especias", "Picante", "Aguacate", "Salmón", "Trufa", "Albahaca", "Palillos chinos", "Sartén", "Horno", "Cazuela", "Chef", "Menú", "Receta", "Delantal", "Varilla", "Rodillo de cocina", "Guacamole", "Hummus", "Dim Sum", "Ramen", "Pad Thai", "Kebab", "Fish and Chips", "Rollitos de primavera", "Falafel", "Curry", "Camembert", "Roquefort", "Mozzarella", "Parmesan", "Cheddar", "Gorgonzola", "Brie", "Feta", "Gouda", "Emmental", "Profiteroles", "Tarta de manzana", "Mousse de chocolate", "Tarta de queso", "Churros", "Donut", "Brownie", "Vino tinto", "Champán", "Café Solo", "Té verde", "Zumo de frutas", "Cóctel", "Limonada", "Sidra", "Cerveza", "Agua con gas", "Cuchillo de chef", "Tabla de cortar", "Espátula", "Sacacorchos", "Abridor", "Salero", "Pimentero", "Báscula de cocina", "Batidora", "Olla a presión", "Salchicha", "Jamón", "Foie Gras", "Ostras", "Caviares", "Langosta", "Gambas", "Mejillones", "Caracoles", "Sopa de cebolla"],
-            music: ["Guitarra", "Piano", "Batería", "Violín", "Trompeta", "Micrófono", "Auriculares", "Saxofón", "Flauta", "Bajo", "Rock", "Pop", "Rap", "Jazz", "Música Clásica", "Electro", "Reggae", "Heavy Metal", "Blues", "Funk", "Michael Jackson", "Beyoncé", "Freddie Mercury", "Celine Dion", "Eminem", "Daft Punk", "Mozart", "Beethoven", "The Beatles", "Elvis Presley", "Concierto", "Festival", "Estribillo", "Coreografía", "Disco de oro", "Estudio de grabación", "Partitura", "Director de orquesta", "Musical", "Amplificador", "Tocadiscos", "Altavoz Bluetooth", "Sintetizador", "Arpa", "Ukelele", "Acordeón", "Pandereta", "Xilófono", "Triángulo", "Bob Marley", "David Bowie", "Madonna", "Rihanna", "Lady Gaga", "Coldplay", "Queen", "Rolling Stones", "AC/DC", "Nirvana", "Shakira", "Bad Bunny", "Rosalía", "Julio Iglesias", "Alejandro Sanz", "Enrique Iglesias", "Luis Miguel", "Daddy Yankee", "Acústico", "Playback", "DJ", "Coro", "Ópera", "Sinfonía", "Balada", "Solo de guitarra", "Beatbox", "Auto-Tune", "Escenario", "Camerino", "Entrada de concierto", "Gira mundial", "Vídeo musical", "Banda sonora", "Himno", "Rhythm and Blues", "Country", "Ska", "Batería electrónica", "Pedal de efectos", "Metrónomo", "Diapasón", "Cuerdas de guitarra", "Baquetas", "Atril", "Micrófono inalámbrico", "Mesa de mezclas"],
-            sports: ["Fútbol", "Baloncesto", "Tenis", "Natación", "Rugby", "Judo", "Atletismo", "Ciclismo", "Fórmula 1", "Boxe", "Golf", "Gimnasia", "Balonmano", "Voleibol", "Esquí", "Snowboard", "Surf", "Skateboarding", "Equitación", "Esgrima", "Balón", "Raqueta", "Piscina", "Estadio", "Camiseta", "Medalla de oro", "Silbato de árbitro", "Cronómetro", "Ring", "Pista de tenis", "Kylian Mbappé", "LeBron James", "Rafael Nadal", "Usain Bolt", "Serena Williams", "Cristiano Ronaldo", "Lionel Messi", "Michael Jordan", "Roger Federer", "Fernando Alonso", "Juegos Olímpicos", "Copa del Mundo", "Grand Slam", "Tarjeta roja", "Penalti", "Maratón", "Tour de Francia", "Super Bowl", "NBA Finals", "Gran Premio de F1", "Botas de fútbol", "Guantes de boxeo", "Casco de bici", "Protector bucal", "Kimono", "Traje de neopreno", "Bastones de esquí", "Tabla de surf", "Aletas", "Putter", "Árbitro", "Entrenador", "Aficionado", "Podio", "Himno national", "Trofeo", "Prolongations", "Mi-temps", "Penalty", "Hors-jeu", "Antoine Griezmann", "Zinedine Zidane", "Novak Djokovic", "Lewis Hamilton", "Stephen Curry", "Tyson Fury", "Conor McGregor", "Simone Biles", "Katie Ledecky", "Escalade", "Tiro con arco", "Badminton", "Tenis de mesa", "Remo", "Piragüismo", "Waterpolo", "Béisbol", "Fútbol americano", "Hockey sobre hielo", "Línea de meta", "Salida nula", "Récord mundial", "Dopaje", "Espíritu deportivo", "Fair-play", "Suplente", "Capitán", "Vestuario", "Patrocinador"]
+            music: ["Guitarra", "Piano", "Batería", "Violín", "Trompeta", "Micrófono", "Auriculares", "Saxofón", "Flauta", "Bajo", "Rock", "Pop", "Rap", "Jazz", "Música Clásica", "Electro", "Reggae", "Heavy Metal", "Blues", "Funk", "Michael Jackson", "Beyoncé", "Freddie Mercury", "Celine Dion", "Eminem", "Daft Punk", "Mozart", "Beethoven", "The Beatles", "Elvis Presley", "Concierto", "Festival", "Estribillo", "Coreografía", "Disco de oro", "Estudio de grabación", "Partition", "Solfège", "Chef d'orchestre", "Comédie musicale", "Amplificador", "Tocadiscos", "Altavoz Bluetooth", "Sintetizador", "Arpa", "Ukelele", "Accordéon", "Tambourin", "Xylophone", "Triangle", "Bob Marley", "David Bowie", "Madonna", "Rihanna", "Lady Gaga", "Coldplay", "Queen", "Rolling Stones", "AC/DC", "Nirvana", "Shakira", "Bad Bunny", "Rosalía", "Julio Iglesias", "Alejandro Sanz", "Enrique Iglesias", "Luis Miguel", "Daddy Yankee", "Acústico", "Playback", "DJ", "Coro", "Ópera", "Sinfonía", "Balada", "Solo de guitarra", "Beatbox", "Auto-Tune", "Escenario", "Camerino", "Entrada de concierto", "Gira mundial", "Vídeo musical", "Banda sonora", "Himno", "Rhythm and Blues", "Country", "Ska", "Batería electrónica", "Pedal de efectos", "Metrónomo", "Diapasón", "Cuerdas de guitarra", "Baquetas", "Atril", "Micrófono inalámbrico", "Mesa de mezclas"],
+            sports: ["Fútbol", "Baloncesto", "Tenis", "Natación", "Rugby", "Judo", "Atletismo", "Ciclismo", "Fórmula 1", "Boxe", "Golf", "Gimnasia", "Balonmano", "Voleibol", "Esquí", "Snowboard", "Surf", "Skateboarding", "Equitación", "Esgrima", "Balón", "Raqueta", "Piscina", "Estadio", "Camiseta", "Medalla de oro", "Silbato de árbitro", "Cronómetro", "Ring", "Pista de tenis", "Kylian Mbappé", "LeBron James", "Rafael Nadal", "Usain Bolt", "Serena Williams", "Cristiano Ronaldo", "Lionel Messi", "Michael Jordan", "Roger Federer", "Fernando Alonso", "Juegos Olímpicos", "Copa del Mundo", "Grand Slam", "Tarjeta roja", "Penalti", "Maratón", "Tour de France", "Super Bowl", "NBA Finals", "Gran Premio de F1", "Botas de fútbol", "Guantes de boxeo", "Casco de bici", "Protector bucal", "Kimono", "Traje de neopreno", "Bastones de esquí", "Tabla de surf", "Aletas", "Putter", "Árbitro", "Entrenador", "Aficionado", "Podio", "Himno national", "Trofeo", "Prolongations", "Mi-temps", "Penalty", "Hors-jeu", "Antoine Griezmann", "Zinedine Zidane", "Novak Djokovic", "Lewis Hamilton", "Stephen Curry", "Tyson Fury", "Conor McGregor", "Simone Biles", "Katie Ledecky", "Escalade", "Tiro con arco", "Badminton", "Tenis de mesa", "Remo", "Piragüismo", "Waterpolo", "Béisbol", "Fútbol americano", "Hockey sobre hielo", "Línea de meta", "Salida nula", "Récord mundial", "Dopaje", "Espíritu deportivo", "Fair-play", "Suplente", "Capitán", "Vestuario", "Patrocinador"]
         }
     };
 
     let currentLang = 'fr';
+    let numTeams = 2;
     let isExpertMode = false;
     let gameDeck = [];
     let remainingWords = [];
-    let scores = { 1: 0, 2: 0 };
+    let scores = {};
     let currentTeam = 1;
     let currentRound = 1;
     let timer;
@@ -682,14 +815,34 @@
     let timeLeft = 30;
     let isTurnActive = false;
 
-    let teamPlayers = { 1: [], 2: [] };
-    let playerTurnIndexes = { 1: 0, 2: 0 };
+    let teamPlayers = {};
+    let playerTurnIndexes = {};
     let playerStats = {};
+
+    function renderExpertFields() {
+        numTeams = parseInt(document.getElementById('team-count-select').value) || 2;
+        const container = document.getElementById('expert-config-container');
+        const t = translations[currentLang];
+        
+        container.innerHTML = '';
+        for (let i = 1; i <= numTeams; i++) {
+            const div = document.createElement('div');
+            div.className = 'config-group';
+            const placeholderStr = t.placeholderExample.replace('{T}', i);
+            div.innerHTML = `
+                <label>${t.team} ${i} :</label>
+                <input type="text" id="team${i}-players-input" placeholder="${placeholderStr}">
+            `;
+            container.appendChild(div);
+        }
+    }
 
     function toggleExpertMode() {
         const mode = document.getElementById('mode-select').value;
         isExpertMode = (mode === 'expert');
-        document.getElementById('expert-config-container').style.display = isExpertMode ? 'block' : 'none';
+        const container = document.getElementById('expert-config-container');
+        container.style.display = isExpertMode ? 'flex' : 'none';
+        if (isExpertMode) renderExpertFields();
     }
 
     function toggleCustomWords() {
@@ -703,23 +856,54 @@
 
         document.getElementById('ui-subtitle').innerText = t.subtitle;
         document.getElementById('ui-label-lang').innerText = t.langLabel;
+        document.getElementById('ui-label-team-count').innerText = t.teamCountLabel;
+
+        const teamSelect = document.getElementById('team-count-select');
+        const currentTeamVal = teamSelect.value || "2";
+        teamSelect.innerHTML = `
+            <option value="2">${t.teamOptions[2]}</option>
+            <option value="3">${t.teamOptions[3]}</option>
+            <option value="4">${t.teamOptions[4]}</option>
+            <option value="5">${t.teamOptions[5]}</option>
+        `;
+        teamSelect.value = currentTeamVal;
+
         document.getElementById('ui-label-mode').innerText = t.modeLabel;
-        document.getElementById('ui-label-team1-players').innerText = t.team1PlayersLabel;
-        document.getElementById('ui-label-team2-players').innerText = t.team2PlayersLabel;
+
+        const modeSelect = document.getElementById('mode-select');
+        const currentModeVal = modeSelect.value || 'standard';
+        modeSelect.innerHTML = `
+            <option value="standard">${t.modes.standard}</option>
+            <option value="expert">${t.modes.expert}</option>
+        `;
+        modeSelect.value = currentModeVal;
+
         document.getElementById('ui-label-theme').innerText = t.themeLabel;
         document.getElementById('ui-label-custom-toggle').innerText = t.customToggleLabel;
         document.getElementById('custom-words-input').placeholder = t.customPlaceholder;
         document.getElementById('ui-label-count').innerText = t.countLabel;
         document.getElementById('ui-label-timer').innerText = t.timerLabel;
-        document.getElementById('ui-rules-hint').innerHTML = t.rulesHint;
+
+        document.getElementById('ui-rules-hint').innerHTML = `
+            <strong>${t.rulesTitle}</strong>
+            <div class="rule-item">
+                <span>• ${t.r1Title}</span>
+                <span class="info-bubble" tabindex="0">💬<span class="tooltip-text">${t.r1Tooltip}</span></span>
+            </div>
+            <div class="rule-item">
+                <span>• ${t.r2Title}</span>
+                <span class="info-bubble" tabindex="0">💬<span class="tooltip-text">${t.r2Tooltip}</span></span>
+            </div>
+            <div class="rule-item">
+                <span>• ${t.r3Title}</span>
+                <span class="info-bubble" tabindex="0">💬<span class="tooltip-text">${t.r3Tooltip}</span></span>
+            </div>
+        `;
+
         document.getElementById('ui-btn-start').innerText = t.btnStart;
         document.getElementById('start-turn-btn').innerText = t.btnStartChrono;
         document.getElementById('ui-btn-skip').innerText = t.btnSkip;
         document.getElementById('ui-btn-found').innerText = t.btnFound;
-        document.getElementById('ui-team1-label').innerText = t.team1;
-        document.getElementById('ui-team2-label').innerText = t.team2;
-        document.getElementById('ui-end-team1-label').innerText = t.team1;
-        document.getElementById('ui-end-team2-label').innerText = t.team2;
         document.getElementById('ui-turn-label').innerText = t.turn;
         document.getElementById('ui-active-player-label').innerText = t.activePlayerLabel;
         document.getElementById('ui-stats-title').innerText = t.statsTitle;
@@ -747,6 +931,8 @@
                 <option value="sports">${t.themes.sports}</option>
             </optgroup>
         `;
+
+        if (isExpertMode) renderExpertFields();
     }
 
     function showScreen(screenId) {
@@ -756,9 +942,11 @@
 
     function startGame() {
         unlockIosAudioPool();
+        triggerVibration();
 
+        numTeams = parseInt(document.getElementById('team-count-select').value) || 2;
         const countInput = parseInt(document.getElementById('word-count').value);
-        const wordCount = Math.max(10, Math.min(100, countInput || 30));
+        let wordCount = Math.max(10, Math.min(100, countInput || 30));
         
         const timeInput = parseInt(document.getElementById('timer-length').value);
         timerConfig = Math.max(10, Math.min(90, timeInput || 30));
@@ -766,27 +954,30 @@
         const mode = document.getElementById('mode-select').value;
         isExpertMode = (mode === 'expert');
         
-        if (isExpertMode) {
-            const rawP1 = document.getElementById('team1-players-input').value;
-            const rawP2 = document.getElementById('team2-players-input').value;
+        scores = {};
+        teamPlayers = {};
+        playerTurnIndexes = {};
+        playerStats = {};
 
-            const list1 = rawP1.split(',').map(s => s.trim()).filter(s => s.length > 0);
-            const list2 = rawP2.split(',').map(s => s.trim()).filter(s => s.length > 0);
-
-            teamPlayers[1] = list1.length > 0 ? list1 : ["Joueur 1A", "Joueur 1B"];
-            teamPlayers[2] = list2.length > 0 ? list2 : ["Joueur 2A", "Joueur 2B"];
-
-            playerTurnIndexes = { 1: 0, 2: 0 };
-            playerStats = {};
-            [...teamPlayers[1], ...teamPlayers[2]].forEach(p => playerStats[p] = 0);
+        for (let i = 1; i <= numTeams; i++) {
+            scores[i] = 0;
+            playerTurnIndexes[i] = 0;
+            
+            if (isExpertMode) {
+                const inputElem = document.getElementById(`team${i}-players-input`);
+                const rawVal = inputElem ? inputElem.value : "";
+                const list = rawVal.split(',').map(s => s.trim()).filter(s => s.length > 0);
+                teamPlayers[i] = list.length > 0 ? list : [`Joueur ${i}A`, `Joueur ${i}B`];
+                teamPlayers[i].forEach(p => playerStats[p] = 0);
+            }
         }
 
         const selectedTheme = document.getElementById('theme-select').value;
         const langData = database[currentLang];
         
-        let sourceBank = [];
+        let themeBank = [];
         if (selectedTheme === 'general') {
-            sourceBank = [
+            themeBank = [
                 ...langData.family.slice(0, 20),
                 ...langData.harrypotter.slice(0, 15),
                 ...langData.marvel.slice(0, 15),
@@ -796,22 +987,39 @@
                 ...langData.food.slice(0, 10)
             ];
         } else {
-            sourceBank = [...langData[selectedTheme]];
+            themeBank = [...langData[selectedTheme]];
         }
 
         const useCustom = document.getElementById('custom-words-toggle').checked;
+        let finalBank = [];
+
         if (useCustom) {
             const rawCustomText = document.getElementById('custom-words-input').value;
             const customList = rawCustomText.split(/[\n,]+/).map(w => w.trim()).filter(w => w.length > 0);
-            if (customList.length > 0) sourceBank = [...customList, ...sourceBank];
+            
+            if (customList.length > 0) {
+                shuffleArray(themeBank);
+                
+                if (customList.length >= wordCount) {
+                    finalBank = [...customList];
+                } else {
+                    const neededExtra = wordCount - customList.length;
+                    const extraWords = themeBank.filter(w => !customList.includes(w)).slice(0, neededExtra);
+                    finalBank = [...customList, ...extraWords];
+                }
+            } else {
+                shuffleArray(themeBank);
+                finalBank = themeBank.slice(0, wordCount);
+            }
+        } else {
+            shuffleArray(themeBank);
+            finalBank = themeBank.slice(0, wordCount);
         }
 
-        shuffleArray(sourceBank);
-        
-        gameDeck = sourceBank.slice(0, Math.min(wordCount, sourceBank.length));
+        shuffleArray(finalBank);
+        gameDeck = [...finalBank];
         remainingWords = [...gameDeck];
 
-        scores = { 1: 0, 2: 0 };
         currentRound = 1;
         currentTeam = 1;
 
@@ -827,21 +1035,53 @@
         return players[idx];
     }
 
+    function renderScoreBoards() {
+        const t = translations[currentLang];
+        const gameBoard = document.getElementById('game-score-board');
+        const endBoard = document.getElementById('end-score-board');
+
+        let gameHtml = '';
+        let endHtml = '';
+
+        for (let i = 1; i <= numTeams; i++) {
+            const activeClass = (i === currentTeam) ? 'active-team-score' : '';
+            gameHtml += `
+                <div class="score-box ${activeClass}">
+                    <span>${t.team} ${i}</span>
+                    <strong id="score-${i}">${scores[i] || 0}</strong>
+                </div>
+            `;
+            endHtml += `
+                <div class="score-box">
+                    <span>${t.team} ${i}</span>
+                    <strong id="end-score-${i}">${scores[i] || 0}</strong>
+                </div>
+            `;
+        }
+
+        gameBoard.innerHTML = gameHtml;
+        endBoard.innerHTML = endHtml;
+    }
+
     function prepareTurn() {
         const t = translations[currentLang];
         isTurnActive = false;
         timeLeft = timerConfig;
 
         const timerElem = document.getElementById('timer-display');
+        const timerBar = document.getElementById('timer-bar');
+        
         timerElem.innerText = timeLeft + 's';
         timerElem.classList.remove('warning');
+        timerBar.classList.remove('warning');
+        timerBar.style.width = '100%';
 
-        document.getElementById('start-turn-btn').style.display = 'block';
+        document.getElementById('start-turn-btn').style.display = 'flex';
         document.getElementById('word-display').style.display = 'none';
         document.getElementById('action-btns').style.display = 'none';
         
-        const teamName = currentTeam === 1 ? t.team1 : t.team2;
-        document.getElementById('current-team-display').innerText = teamName;
+        document.getElementById('current-team-display').innerText = `${t.team} ${currentTeam}`;
+        renderScoreBoards();
 
         if (isExpertMode) {
             document.getElementById('expert-player-banner').style.display = 'block';
@@ -855,25 +1095,32 @@
         if (remainingWords.length === 0) return;
 
         unlockIosAudioPool();
+        triggerVibration();
 
         isTurnActive = true;
         document.getElementById('start-turn-btn').style.display = 'none';
         document.getElementById('word-display').style.display = 'flex';
-        document.getElementById('action-btns').style.display = 'flex';
+        document.getElementById('action-btns').style.display = 'grid';
 
         showCurrentWord();
 
         const timerElem = document.getElementById('timer-display');
+        const timerBar = document.getElementById('timer-bar');
 
         timer = setInterval(() => {
             timeLeft--;
             timerElem.innerText = timeLeft + 's';
 
+            const percentage = (timeLeft / timerConfig) * 100;
+            timerBar.style.width = percentage + '%';
+
             if (timeLeft <= 10 && timeLeft > 0) {
                 timerElem.classList.add('warning');
+                timerBar.classList.add('warning');
                 playSoundTick();
             } else if (timeLeft > 10) {
                 timerElem.classList.remove('warning');
+                timerBar.classList.remove('warning');
             }
 
             if (timeLeft <= 0) {
@@ -892,9 +1139,11 @@
         if (!isTurnActive) return;
 
         playSoundSuccess();
+        triggerVibration(40);
 
         scores[currentTeam]++;
-        document.getElementById(`score-${currentTeam}`).innerText = scores[currentTeam];
+        const scoreElem = document.getElementById(`score-${currentTeam}`);
+        if (scoreElem) scoreElem.innerText = scores[currentTeam];
 
         if (isExpertMode) {
             const activePlayer = getCurrentPlayerName();
@@ -914,6 +1163,7 @@
         if (!isTurnActive || remainingWords.length <= 1) return;
 
         playSoundSkip();
+        triggerVibration(20);
 
         const skippedWord = remainingWords.shift();
         remainingWords.push(skippedWord);
@@ -926,6 +1176,7 @@
         isTurnActive = false;
 
         document.getElementById('timer-display').classList.remove('warning');
+        document.getElementById('timer-bar').classList.remove('warning');
 
         if (!deckEmpty) {
             playSoundEndTurn();
@@ -938,8 +1189,8 @@
         if (deckEmpty) {
             handleRoundEnd();
         } else {
-            currentTeam = currentTeam === 1 ? 2 : 1;
-            const nextTeamName = currentTeam === 1 ? t.team1 : t.team2;
+            currentTeam = (currentTeam % numTeams) + 1;
+            const nextTeamName = `${t.team} ${currentTeam}`;
             const nextPlayerName = isExpertMode ? ` (${getCurrentPlayerName()})` : '';
             alert(`${t.timeUpAlert} ${nextTeamName}${nextPlayerName}.`);
             prepareTurn();
@@ -948,24 +1199,25 @@
 
     function handleRoundEnd() {
         const t = translations[currentLang];
-        document.getElementById('end-score-1').innerText = scores[1];
-        document.getElementById('end-score-2').innerText = scores[2];
+        renderScoreBoards();
 
         if (isExpertMode) {
             const tbody = document.getElementById('stats-table-body');
             tbody.innerHTML = '';
             
-            [1, 2].forEach(teamNum => {
-                teamPlayers[teamNum].forEach(player => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td><strong>${player}</strong></td>
-                        <td>${teamNum === 1 ? t.team1 : t.team2}</td>
-                        <td>${playerStats[player] || 0}</td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            });
+            for (let teamNum = 1; teamNum <= numTeams; teamNum++) {
+                if (teamPlayers[teamNum]) {
+                    teamPlayers[teamNum].forEach(player => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td><strong>${player}</strong></td>
+                            <td>${t.team} ${teamNum}</td>
+                            <td>${playerStats[player] || 0}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                }
+            }
 
             document.getElementById('stats-container').style.display = 'block';
         } else {
@@ -973,13 +1225,25 @@
         }
 
         if (currentRound < 3) {
-            document.getElementById('round-end-title').innerText = `${t.roundEndTitle} ${currentRound}`;
+            document.getElementById('round-end-title').innerText = `${t.roundEndTitle}`;
             document.getElementById('next-round-btn').innerText = t.nextRoundBtn;
             showScreen('round-end-screen');
         } else {
+            let maxScore = -1;
+            let winners = [];
+            for (let i = 1; i <= numTeams; i++) {
+                if (scores[i] > maxScore) {
+                    maxScore = scores[i];
+                    winners = [i];
+                } else if (scores[i] === maxScore) {
+                    winners.push(i);
+                }
+            }
+
             let winnerText = t.draw;
-            if (scores[1] > scores[2]) winnerText = `${t.team1} ${t.win}`;
-            if (scores[2] > scores[1]) winnerText = `${t.team2} ${t.win}`;
+            if (winners.length === 1) {
+                winnerText = `${t.team} ${winners[0]} ${t.win}`;
+            }
 
             document.getElementById('round-end-title').innerText = `${t.victory} ${winnerText}`;
             document.getElementById('next-round-btn').innerText = t.restartBtn;
@@ -1004,8 +1268,6 @@
 
     function updateUI() {
         const t = translations[currentLang];
-        document.getElementById('score-1').innerText = scores[1];
-        document.getElementById('score-2').innerText = scores[2];
         document.getElementById('round-display').innerText = t.rounds[currentRound];
     }
 
