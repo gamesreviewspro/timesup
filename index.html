@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Time's Up Game v1.02.07</title>
+    <title>Time's Up Game v1.02.08</title>
     <style>
         * {
             box-sizing: border-box;
@@ -387,17 +387,18 @@
         <button class="btn" id="next-round-btn" onclick="nextRound()">Manche suivante</button>
     </div>
 
-    <div class="version-footer">version 1.02.07</div>
+    <div class="version-footer">version 1.02.08</div>
 </div>
 
 <script>
-    // --- LECTEUR AUDIO GARANTI COMPATIBLE TOUS SYSTEMES ---
+    // --- MOTEUR AUDIO COMPATIBLE SAFARI iOS SANS INTERRUPTIONS ---
     let soundEnabled = true;
     let audioCtx = null;
-    let isIosUnlocked = false;
+    let timerTickAudioPlayer = null; // Élément audio réutilisé pour le chrono iOS
 
-    function createWavAudioURI(freq, durationMs) {
-        const sampleRate = 8000;
+    // Générateur d'ondes douces au format Data-URI (Audio PCM 8-bit doux)
+    function createSoftWavURI(freq, durationMs, envelope = 'bell') {
+        const sampleRate = 11025;
         const numSamples = Math.floor(sampleRate * (durationMs / 1000));
         const wavBuffer = new Uint8Array(44 + numSamples);
 
@@ -413,7 +414,13 @@
 
         for (let i = 0; i < numSamples; i++) {
             const t = i / sampleRate;
-            const sample = Math.sin(2 * Math.PI * freq * t);
+            let gain = Math.exp(-3 * (i / numSamples)); // Atténuation douce
+
+            if (envelope === 'soft') {
+                gain = Math.sin(Math.PI * (i / numSamples)); // Cloche douce
+            }
+
+            const sample = Math.sin(2 * Math.PI * freq * t) * gain;
             wavBuffer[44 + i] = Math.floor((sample + 1) * 127.5);
         }
 
@@ -424,24 +431,26 @@
         return 'data:audio/wav;base64,' + btoa(binary);
     }
 
-    const sounds = {
-        success: createWavAudioURI(880, 150),
-        skip: createWavAudioURI(220, 200),
-        tickWarning: createWavAudioURI(750, 70),
-        endTurn: createWavAudioURI(150, 350)
+    // Sons doux pré-calculés
+    const softSounds = {
+        success: createSoftWavURI(523.25, 180, 'bell'),  // Do doux (Clochette)
+        skip: createSoftWavURI(220, 100, 'soft'),        // Pop doux
+        tickWarning: createSoftWavURI(600, 40, 'soft'),  // Clic métronome doux
+        endTurn: createSoftWavURI(261.63, 300, 'bell')    // Carillon doux de fin
     };
 
-    function playSound(soundUri) {
+    function playSoundNative(soundUri) {
         if (!soundEnabled) return;
         try {
             const audio = new Audio(soundUri);
+            audio.volume = 0.5;
             audio.play().catch(() => {
-                playWebAudioFallback(soundUri === sounds.success ? 880 : 300);
+                playWebAudioFallback();
             });
         } catch(e) {}
     }
 
-    function playWebAudioFallback(freq) {
+    function playWebAudioFallback() {
         try {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -451,8 +460,10 @@
             }
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            osc.frequency.value = freq;
-            gain.gain.value = 0.1;
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(500, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
             osc.connect(gain);
             gain.connect(audioCtx.destination);
             osc.start();
@@ -460,31 +471,57 @@
         } catch(e) {}
     }
 
-    function unlockIosSystem() {
-        if (isIosUnlocked) return;
+    // Déblocage universel du canal audio sur iOS Safari lors d'un clic
+    function unlockIosAudioPool() {
+        if (!timerTickAudioPlayer) {
+            timerTickAudioPlayer = new Audio(softSounds.tickWarning);
+            timerTickAudioPlayer.volume = 0.5;
+        }
         try {
-            const silent = new Audio(sounds.tickWarning);
-            silent.volume = 0.01;
-            silent.play().then(() => {
-                isIosUnlocked = true;
+            timerTickAudioPlayer.play().then(() => {
+                timerTickAudioPlayer.pause();
+                timerTickAudioPlayer.currentTime = 0;
             }).catch(() => {});
         } catch(e) {}
+
+        if (!audioCtx) {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (AudioContextClass) audioCtx = new AudioContextClass();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
     }
 
     ['touchstart', 'touchend', 'click'].forEach(evt => {
-        document.addEventListener(evt, unlockIosSystem, false);
+        document.addEventListener(evt, unlockIosAudioPool, false);
     });
 
     function toggleSound() {
         soundEnabled = !soundEnabled;
         document.getElementById('sound-btn').innerText = soundEnabled ? '🔊 Son ON' : '🔇 Son OFF';
-        if (soundEnabled) unlockIosSystem();
+        if (soundEnabled) unlockIosAudioPool();
     }
 
-    function playSoundSuccess() { playSound(sounds.success); }
-    function playSoundSkip() { playSound(sounds.skip); }
-    function playSoundTick() { playSound(sounds.tickWarning); }
-    function playSoundEndTurn() { playSound(sounds.endTurn); }
+    function playSoundSuccess() { playSoundNative(softSounds.success); }
+    function playSoundSkip() { playSoundNative(softSounds.skip); }
+    
+    // Bip doux du chrono des 10 dernières secondes garanti sur iOS Safari
+    function playSoundTick() {
+        if (!soundEnabled) return;
+        if (timerTickAudioPlayer) {
+            try {
+                timerTickAudioPlayer.currentTime = 0;
+                timerTickAudioPlayer.play().catch(() => playSoundNative(softSounds.tickWarning));
+            } catch(e) {
+                playSoundNative(softSounds.tickWarning);
+            }
+        } else {
+            playSoundNative(softSounds.tickWarning);
+        }
+    }
+    
+    function playSoundEndTurn() { playSoundNative(softSounds.endTurn); }
 
     const translations = {
         fr: {
@@ -605,7 +642,7 @@
             travel: ["France", "Italie", "Japon", "États-Unis", "Brésil", "Australie", "Égypte", "Canada", "Mexique", "Chine", "Inde", "Espagne", "Grèce", "Thaïlande", "Maroc", "Pérou", "Islande", "Norvège", "Afrique du Sud", "Argentine", "Paris", "Tokyo", "New York", "Rome", "Londres", "Rio de Janeiro", "Sydney", "Le Caire", "Pékin", "Bangkok", "Tour Eiffel", "Statue de la Liberté", "Grande Muraille de Chine", "Pyramides de Gizeh", "Colisée", "Taj Mahal", "Machu Picchu", "Christ Rédempteur", "Pétra", "Acropole d'Athènes", "Passeport", "Valise", "Boussole", "Carte du monde", "Avion", "Sac à dos", "Décalage horaire", "Souvenir", "Billet d'avion", "Appareil photo", "Bateau de croisière", "Hôtel", "Auberge de jeunesse", "Guide touristique", "Escale", "Douane", "Visa", "Monnaie étrangère", "Crème solaire", "Lunettes de soleil", "Gondole de Venise", "Safari", "Aurore boréale", "Plongée sous-marine", "Randonnée en montagne", "Volcano", "Plage de sable blanc", "Désert du Sahara", "Jungle amazonienne", "Fjord", "Allemagne", "Portugal", "Pays-Bas", "Suisse", "Suède", "Chili", "Colombie", "Vietnam", "Indonésie", "Nouvelle-Zélande", "Dubaï", "Istanbul", "Barcelone", "Venise", "Amsterdam", "Los Angeles", "Las Vegas", "San Francisco", "Montréal", "Kyoto", "Big Ben", "Mont Fuji", "Grand Canyon", "Chutes du Niagara", "Mont Everest", "Opéra de Sydney", "Burj Khalifa", "Sagrada Familia", "Mont Saint-Michel"],
             food: ["Pizza", "Burger", "Sushi", "Pâtes Carbonara", "Paëlla", "Tacos", "Couscous", "Fondue Savoyarde", "Raclette", "Crêpe", "Croissant", "Baguette", "Macaron", "Gaufre", "Tiramisu", "Eclair au chocolat", "Tartiflette", "Boeuf Bourguignon", "Cassoulet", "Quiche Lorraine", "Fromage", "Chocolat", "Huile d'olive", "Ail", "Épices", "Piment", "Avocat", "Saumon", "Truffe", "Basilic", "Baguettes chinoises", "Poêle", "Four", "Casserole", "Chef cuisinier", "Menu", "Recette", "Tablier", "Fouet", "Rouleau à pâtisserie", "Guacamole", "Hummus", "Dim Sum", "Ramen", "Pad Thaï", "Kebab", "Fish and Chips", "Nems", "Falafel", "Curry", "Camembert", "Roquefort", "Mozzarella", "Parmesan", "Cheddar", "Gorgonzola", "Brie", "Reblochon", "Feta", "Emmental", "Profiteroles", "Crème brûlée", "Tarte Tatin", "Mousse au chocolat", "Mille-feuille", "Paris-Brest", "Panna Cotta", "Cheesecake", "Churros", "Donut", "Vin rouge", "Champagne", "Café Espresso", "Thé vert", "Jus de fruits", "Cocktail", "Limonade", "Cidre", "Bière", "Eau gazeuse", "Couteau de chef", "Planche à découper", "Spatule", "Tire-bouchon", "Décapsuleur", "Salière", "Poivrier", "Balance de cuisine", "Mixeur", "Cocotte-minute", "Saucisson", "Jambon de Bayonne", "Foie gras", "Huîtres", "Caviar", "Homard", "Crevettes", "Moules frites", "Escargots", "Soupe à l'oignon"],
             music: ["Guitare", "Piano", "Batterie", "Violon", "Trompette", "Microphone", "Casque audio", "Saxophone", "Flûte", "Basse", "Rock", "Pop", "Rap", "Jazz", "Musique Classique", "Electro", "Reggae", "Heavy Metal", "Blues", "Funk", "Michael Jackson", "Beyoncé", "Freddie Mercury", "Celine Dion", "Eminem", "Daft Punk", "Mozart", "Beethoven", "The Beatles", "Elvis Presley", "Concert", "Festival", "Refrain", "Chorégraphie", "Disque d'or", "Studio d'enregistrement", "Partition", "Solfège", "Chef d'orchestre", "Comédie musicale", "Ampli", "Platine vinyle", "Enceinte Bluetooth", "Synthétiseur", "Harpe", "Ukulélé", "Accordéon", "Tambourin", "Xylophone", "Triangle", "Bob Marley", "David Bowie", "Madonna", "Rihanna", "Lady Gaga", "Coldplay", "Queen", "Rolling Stones", "AC/DC", "Nirvana", "Johnny Hallyday", "Edith Piaf", "Stromae", "Orelsan", "Angèle", "Bigflo et Oli", "Soprano", "Gims", "Jul", "Aya Nakamura", "Acoustique", "Playback", "DJ", "Chorale", "Opéra", "Symphonie", "Ballade", "Solo de guitare", "Beatbox", "Auto-Tune", "Acrobate de scène", "Coulisses", "Billet de concert", "Tournée mondiale", "Clip vidéo", "Bande originale", "Hymne", "Rhythm and blues", "Country", "Ska", "Batterie électronique", "Pédale d'effet", "Métronome", "Diapason", "Cordes de guitare", "Baguettes de batterie", "Pupitre", "Micro HF", "Table de mixage", "Console"],
-            sports: ["Football", "Basketball", "Tennis", "Natation", "Rugby", "Judo", "Athlétisme", "Cyclisme", "Formule 1", "Boxe", "Golf", "Gymnastique", "Handball", "Volleyball", "Ski alpin", "Snowboard", "Surfing", "Skateboard", "Équitation", "Escrime", "Ballon", "Raquette", "Piscine", "Stade", "Maillot", "Médaille d'or", "Sifflet d'arbitre", "Chronomètre", "Ring", "Court de tennis", "Kylian Mbappé", "LeBron James", "Rafael Nadal", "Usain Bolt", "Teddy Riner", "Serena Williams", "Cristiano Ronaldo", "Lionel Messi", "Michael Jordan", "Roger Federer", "Jeux Olympiques", "Coupe du Monde", "Grand Chelem", "Carton rouge", "Tir au but", "Marathon", "Tour de France", "Super Bowl", "NBA Finals", "Grand Prix F1", "Crampons", "Gants de boxe", "Casque de vélo", "Protège-dents", "Kimono", "Combinaison de plongée", "Bâtons de ski", "Planche de surf", "Palmes", "Putter", "Arbitre", "Entraîneur", "Supporter", "Podium", "Hymne national", "Trophée", "Prolongations", "Mi-temps", "Penalty", "Hors-jeu", "Antoine Griezmann", "Zinedine Zidane", "Novak Djokovic", "Lewis Hamilton", "Stephen Curry", "Tyson Fury", "Conor McGregor", "Simone Biles", "Katie Ledecky", "Clarisse Agbegnenou", "Escalade", "Tir à l'arc", "Badminton", "Ping-pong", "Aviron", "Canoë-kayak", "Water-polo", "Baseball", "Football américain", "Hockey sur glace", "Ligne d'arrivée", "Faux départ", "Record du monde", "Dopaje", "Espíritu deportivo", "Fair-play", "Suplente", "Capitaine", "Vestiaire", "Sponsor"]
+            sports: ["Football", "Basketball", "Tennis", "Natation", "Rugby", "Judo", "Athletisme", "Cyclisme", "Formule 1", "Boxe", "Golf", "Gymnastique", "Handball", "Volleyball", "Ski alpin", "Snowboard", "Surfing", "Skateboard", "Équitation", "Escrime", "Ballon", "Raquette", "Piscine", "Stade", "Maillot", "Médaille d'or", "Sifflet d'arbitre", "Chronomètre", "Ring", "Court de tennis", "Kylian Mbappé", "LeBron James", "Rafael Nadal", "Usain Bolt", "Teddy Riner", "Serena Williams", "Cristiano Ronaldo", "Lionel Messi", "Michael Jordan", "Roger Federer", "Jeux Olympiques", "Coupe du Monde", "Grand Chelem", "Carton rouge", "Tir au but", "Marathon", "Tour de France", "Super Bowl", "NBA Finals", "Grand Prix F1", "Crampons", "Gants de boxe", "Casque de vélo", "Protège-dents", "Kimono", "Combinaison de plongée", "Bâtons de ski", "Planche de surf", "Palmes", "Putter", "Arbitre", "Entraîneur", "Supporter", "Podium", "Hymne national", "Trophée", "Prolongations", "Mi-temps", "Penalty", "Hors-jeu", "Antoine Griezmann", "Zinedine Zidane", "Novak Djokovic", "Lewis Hamilton", "Stephen Curry", "Tyson Fury", "Conor McGregor", "Simone Biles", "Katie Ledecky", "Clarisse Agbegnenou", "Escalade", "Tir à l'arc", "Badminton", "Ping-pong", "Aviron", "Canoë-kayak", "Water-polo", "Baseball", "Football américain", "Hockey sur glace", "Ligne d'arrivée", "Faux départ", "Record du monde", "Dopaje", "Espíritu deportivo", "Fair-play", "Suplente", "Capitaine", "Vestiaire", "Sponsor"]
         },
         en: {
             kids: ["Cat", "Dog", "Cow", "Pig", "Lion", "Elephant", "Monkey", "Duck", "Bird", "Fish", "Banana", "Apple", "Cake", "Ice Cream", "Pizza", "Bread", "Milk", "Chocolate", "Strawberry", "Carrot", "Car", "Bicycle", "Train", "Airplane", "Boat", "Rocket", "Fire Truck", "Tractor", "Bus", "Motorcycle", "Bed", "Chair", "Table", "Television", "Toothbrush", "House", "Sun", "Rain", "Snow", "Cloud", "Ball", "Doll", "Book", "Pencil", "Scissors", "Hat", "Shoe", "Coat", "Slide", "Swing", "Giraffe", "Bear", "Rabbit", "Frog", "Turtle", "Butterfly", "Bee", "Dolphin", "Horse", "Sheep", "Lollipop", "Candy", "Orange Juice", "Spoon", "Fork", "Plate", "Glass", "Napkin", "Pajamas", "Sock", "Flower", "Tree", "Moon", "Star", "Sea", "Sand", "Seashell", "Sandcastle", "Snowman", "Gift", "Teddy Bear", "Pacifier", "Baby Bottle", "Paintbrush", "Paint", "Drum", "Trumpet", "Guitar", "Clock", "Mirror", "Soap", "Bathtub", "Comb", "Backpack", "Scooter", "Schoolbag", "Cap", "Glasses", "Ball", "Lego"],
@@ -718,7 +755,7 @@
     }
 
     function startGame() {
-        unlockIosSystem();
+        unlockIosAudioPool();
 
         const countInput = parseInt(document.getElementById('word-count').value);
         const wordCount = Math.max(10, Math.min(100, countInput || 30));
@@ -817,7 +854,7 @@
     function startTurn() {
         if (remainingWords.length === 0) return;
 
-        unlockIosSystem();
+        unlockIosAudioPool();
 
         isTurnActive = true;
         document.getElementById('start-turn-btn').style.display = 'none';
