@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Time's Up Game</title>
+    <title>Time's Up Game v1.02.03</title>
     <style>
         * {
             box-sizing: border-box;
@@ -251,6 +251,13 @@
             background: #1e1e2f;
             color: #ff4757;
         }
+
+        .version-footer {
+            font-size: 0.75rem;
+            color: #57606f;
+            margin-top: 25px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -377,14 +384,16 @@
 
         <button class="btn" id="next-round-btn" onclick="nextRound()">Manche suivante</button>
     </div>
+
+    <div class="version-footer">version 1.02.03</div>
 </div>
 
 <script>
-    // AUDIO ENGINE CORRIGÉ POUR GITHUB PAGES & MOBILE
+    // MOTEUR AUDIO UNIVERSEL (Web Audio API)
     let soundEnabled = true;
     let audioCtx = null;
 
-    function initAudio() {
+    function unlockAudio() {
         if (!audioCtx) {
             const AudioContextClass = window.AudioContext || window.webkitAudioContext;
             if (AudioContextClass) {
@@ -396,19 +405,20 @@
         }
     }
 
-    // Débloque le son au premier clic utilisateur n'importe où
-    window.addEventListener('click', () => { initAudio(); }, { once: true });
-    window.addEventListener('touchstart', () => { initAudio(); }, { once: true });
+    // Déblocage automatique sur toute interaction utilisateur
+    ['click', 'touchstart', 'touchend', 'mousedown'].forEach(eventName => {
+        document.addEventListener(eventName, unlockAudio, { once: false });
+    });
 
     function toggleSound() {
         soundEnabled = !soundEnabled;
         document.getElementById('sound-btn').innerText = soundEnabled ? '🔊 Son ON' : '🔇 Son OFF';
-        if (soundEnabled) initAudio();
+        if (soundEnabled) unlockAudio();
     }
 
-    function playBeep(freq, type, duration) {
+    function playTone(freq, duration, type = 'sine') {
         if (!soundEnabled) return;
-        initAudio();
+        unlockAudio();
         if (!audioCtx) return;
 
         try {
@@ -418,43 +428,37 @@
             osc.type = type;
             osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
 
-            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.01, audioCtx.currentTime + duration);
 
             osc.connect(gain);
             gain.connect(audioCtx.destination);
 
-            osc.start();
+            osc.start(audioCtx.currentTime);
             osc.stop(audioCtx.currentTime + duration);
         } catch(e) {}
     }
 
-    function playSoundSuccess() { playBeep(880, 'sine', 0.15); }
-    function playSoundSkip() { playBeep(220, 'triangle', 0.2); }
-    function playSoundTick(isLast) { playBeep(isLast ? 600 : 440, 'sine', 0.05); }
+    function playSoundSuccess() {
+        if (!soundEnabled) return;
+        playTone(523.25, 0.1, 'sine'); // C5
+        setTimeout(() => playTone(659.25, 0.15, 'sine'), 80); // E5
+    }
+
+    function playSoundSkip() {
+        if (!soundEnabled) return;
+        playTone(200, 0.15, 'triangle');
+    }
+
+    function playSoundTick(isWarning) {
+        if (!soundEnabled) return;
+        playTone(isWarning ? 800 : 400, 0.04, 'sine');
+    }
 
     function playSoundEndTurn() {
         if (!soundEnabled) return;
-        initAudio();
-        if (!audioCtx) return;
-
-        try {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.6);
-
-            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.6);
-
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.6);
-        } catch(e) {}
+        playTone(300, 0.15, 'sawtooth');
+        setTimeout(() => playTone(150, 0.3, 'sawtooth'), 120);
     }
 
     const translations = {
@@ -569,13 +573,13 @@
         fr: {
             kids: ["Chat", "Chien", "Vache", "Cochon", "Lion", "Éléphant", "Singe", "Canard", "Oiseau", "Poisson", "Banane", "Pomme", "Gâteau", "Glace", "Pizza", "Pain", "Lait", "Chocolat", "Fraise", "Carotte", "Voiture", "Vélo", "Train", "Avion", "Bateau", "Fusée", "Camion de pompiers", "Tracteur", "Bus", "Moto", "Lit", "Chaise", "Table", "Télévision", "Brosse à dents", "Maison", "Soleil", "Pluie", "Neige", "Nuage", "Ballon", "Poupée", "Livre", "Crayon", "Ciseaux", "Chapeau", "Chaussure", "Manteau", "Toboggan", "Balançoire", "Girafe", "Ours", "Lapin", "Grenouille", "Tortue", "Papillon", "Abeille", "Dauphin", "Cheval", "Mouton", "Sucette", "Bonbon", "Jus d'orange", "Cuillère", "Fourchette", "Assiette", "Verre", "Serviette", "Pyjama", "Chaussette", "Fleur", "Arbre", "Lune", "Étoile", "Mer", "Sable", "Coquillage", "Château de sable", "Bonhomme de neige", "Cadeau", "Doudou", "Tétine", "Biberon", "Pinceau", "Peinture", "Tambour", "Trompette", "Guitare", "Horloge", "Miroir", "Savon", "Baignoire", "Peigne", "Sac à dos", "Trottinette", "Cartable", "Casquette", "Lunettes", "Balle", "Lego"],
             family: ["Pompier", "Boulanger", "Médecin", "Astronaute", "Jardinier", "Policier", "Cuisinier", "Professeur", "Vétérinaire", "Coiffeur", "Supermarché", "Boulangerie", "Piscine", "Aéroport", "Cinéma", "Bibliothèque", "Zoo", "Plage", "Musée", "Gare", "Téléphone", "Grille-pain", "Aspirateur", "Machine à laver", "Parapluie", "Valise", "Réveil", "Casque d'écoute", "Télécommande", "Ventilateur", "Peur", "Colère", "Joie", "Sommeil", "Faim", "Course à pied", "Danse", "Jardinage", "Bricolage", "Pêche", "Château fort", "Tour Eiffel", "Fusée spatiale", "Sous-marin", "Grotte", "Montagne", "Désert", "Volcan", "Île déserte", "Forêt", "Sifflet", "Lampe de poche", "Loupe", "Boussole", "Gourde", "Sac de couchage", "Tente", "Feu de camp", "Pique-nique", "Gâteau d'anniversaire", "Dentiste", "Plombier", "Facteur", "Pilote", "Détective", "Architecte", "Comédien", "Photographe", "Électricien", "Mécanicien", "Gare routière", "Port de pêche", "Hôpital", "Stade de foot", "Parc d'attractions", "Patinoire", "Ferme", "Chantier", "Poste", "Mairie", "Micro-ondes", "Sèche-cheveux", "Tondeuse à gazon", "Fer à repasser", "Cafetière", "Lave-vaisselle", "Imprimante", "Clavier", "Balance", "Thermomètre", "Escrime", "Escalade", "Tir à l'arc", "Plongée", "Équitation", "Skateboard", "Roller", "Ping-pong", "Badminton", "Yoga"],
-            harrypotter: ["Harry Potter", "Ron Weasley", "Hermione Granger", "Albus Dumbledore", "Voldemort", "Severus Rogue", "Hagrid", "Sirius Black", "Drago Malefoy", "Dobby", "Neville Londubat", "Bellatrix Lestrange", "Minerva McGonagall", "Remus Lupin", "Fred Weasley", "George Weasley", "Ginny Weasley", "Lucius Malefoy", "Dolores Ombrage", "Luna Lovegood", "Cedric Diggory", "Peter Pettigrow", "Gellert Grindelwald", "Cho Chang", "Poudlard", "Voie 9 3/4", "Pré-au-Lard", "Chambre des Secrets", "Forêt Interdite", "Le Chaudron Baveur", "Chemin de Traverse", "Azkaban", "Baguette de Sureau", "Choixpeau magique", "Nimbus 2000", "Carte du Maraudeur", "Retourneur de temps", "Vif d'or", "Souaffle", "Cognard", "Cape d'invisibilité", "Potion de Polynectar", "Pensine", "Miroir du Riséd", "Pierre Philosophale", "Médaillon de Serpentard", "Diadème de Serdaigle", "Coupe de Poufsouffle", "Expecto Patronum", "Avada Kedavra", "Wingardium Leviosa", "Lumos", "Alohomora", "Expelliarmus", "Crucio", "Imperio", "Sectumsempra", "Accio", "Hippogriffe", "Sombral", "Basilic", "Aragog", "Phénix", "Loup-garou", "Détraqueur", "Niffleur", "Botruc", "Mangemort", "Gryffondor", "Serpentard", "Serdaigle", "Poufsouffle", "Tournoi des Trois Sorciers", "Bal des Yule", "Armée de Dumbledore", "Ordre du Phénix", "Bière au beurre", "Chocogrenouille", "Dragées Surprises de Bertie Crochue", "Gazette du Sorcier", "Bus Magique", "Robe de sorcier", "Chouette Edwige", "Croûtard", "Pattesmol", "Éclair de Feu", "Encrier", "Parchemin", "Feudeymon", "Sortilège du Fidelius", "Poudre de Cheminette", "Mers de Poudlard", "Saule Cogneur", "Cabane de Hagrid", "Salle sur Demande", "Tour d'Astronomie", "Arithmancie", "Botanique", "Métamorphose"],
+            harrypotter: ["Harry Potter", "Ron Weasley", "Hermione Granger", "Albus Dumbledore", "Voldemort", "Severus Rogue", "Hagrid", "Sirius Black", "Drago Malefoy", "Dobby", "Neville Londubat", "Bellatrix Lestrange", "Minerva McGonagall", "Remus Lupin", "Fred Weasley", "George Weasley", "Ginny Weasley", "Lucius Malfoy", "Dolores Ombrage", "Luna Lovegood", "Cedric Diggory", "Peter Pettigrow", "Gellert Grindelwald", "Cho Chang", "Poudlard", "Voie 9 3/4", "Pré-au-Lard", "Chambre des Secrets", "Forêt Interdite", "Le Chaudron Baveur", "Chemin de Traverse", "Azkaban", "Baguette de Sureau", "Choixpeau magique", "Nimbus 2000", "Carte du Maraudeur", "Retourneur de temps", "Vif d'or", "Souaffle", "Cognard", "Cape d'invisibilité", "Potion de Polynectar", "Pensine", "Miroir du Riséd", "Pierre Philosophale", "Médaillon de Serpentard", "Diadème de Serdaigle", "Coupe de Poufsouffle", "Expecto Patronum", "Avada Kedavra", "Wingardium Leviosa", "Lumos", "Alohomora", "Expelliarmus", "Crucio", "Imperio", "Sectumsempra", "Accio", "Hippogriffe", "Sombral", "Basilic", "Aragog", "Phénix", "Loup-garou", "Détraqueur", "Niffleur", "Botruc", "Mangemort", "Gryffondor", "Serpentard", "Serdaigle", "Poufsouffle", "Tournoi des Trois Sorciers", "Bal des Yule", "Armée de Dumbledore", "Ordre du Phénix", "Bière au beurre", "Chocogrenouille", "Dragées Surprises de Bertie Crochue", "Gazette du Sorcier", "Bus Magique", "Robe de sorcier", "Chouette Edwige", "Croûtard", "Pattesmol", "Éclair de Feu", "Encrier", "Parchemin", "Feudeymon", "Sortilège du Fidelius", "Poudre de Cheminette", "Mers de Poudlard", "Saule Cogneur", "Cabane de Hagrid", "Salle sur Demande", "Tour d'Astronomie", "Arithmancie", "Botanique", "Métamorphose"],
             marvel: ["Iron Man", "Spider-Man", "Captain America", "Thor", "Hulk", "Black Widow", "Hawkeye", "Doctor Strange", "Black Panther", "Ant-Man", "Groot", "Rocket Raccoon", "Star-Lord", "Deadpool", "Thanos", "Loki", "Green Goblin", "Venom", "Red Skull", "Ultron", "Mysterio", "Captain Marvel", "Wasp", "Falcon", "Winter Soldier", "Vision", "Wanda Maximoff", "Quicksilver", "Gamora", "Drax", "Nebula", "Mantis", "Nick Fury", "Phil Coulson", "Pepper Potts", "Happy Hogan", "Daredevil", "Punisher", "Jessica Jones", "Luke Cage", "Bouclier de Captain America", "Mjolnir", "Stormbreaker", "Gant de l'Infini", "Costume de Spider-Man", "Réacteur Arc", "Oeil de Agamotto", "Web Shooter", "Wakanda", "Asgard", "Tour des Avengers", "Kamar-Taj", "Quantum Realm", "Knowhere", "Sokovie", "Xandar", "Titan", "Helicarrier", "Pierre de l'Espace", "Pierre de l'Esprit", "Pierre du Pouvoir", "Pierre du Temps", "Pierre de la Réalité", "Pierre de l'Âme", "Vibranium", "Adamantium", "J.A.R.V.I.S.", "F.R.I.D.A.Y.", "S.H.I.E.L.D.", "H.Y.D.R.A.", "Les Ravageurs", "Guardians of the Galaxy", "Avengers", "Eternals", "Inhumans", "X-Men", "Wolverine", "Professeur X", "Magneto", "Jean Grey", "Cyclope", "Tornade", "Rogue", "Beast", "Mystique", "Nightcrawler", "Gambit", "Silver Surfer", "Galactus", "Doctor Doom", "Kingpin", "Electro", "Doc Ock", "Sandman", "Lizard", "Vulture"],
             disney: ["Mickey Mouse", "Donald Duck", "Dingo", "Simba", "Mufasa", "Scar", "Aladdin", "Le Génie", "Jafar", "Cendrillon", "Blanche-Neige", "Ariel", "La Bête", "Belle", "Mulan", "Pocahontas", "Elsa", "Anna", "Olaf", "Vaiana", "Maui", "Mirabel Encanto", "Stitch", "Rapunzel", "Flynn Rider", "Woody", "Buzz l'Éclair", "Flash McQueen", "Nemo", "Dory", "Remy Ratatouille", "Wall-E", "Mr. Indestructible", "Kuzco", "Hercules", "Tarzan", "Mowgli", "Baloo", "Robin des Bois", "Peter Pan", "Capitaine Crochet", "Fée Clochette", "Pinocchio", "Bambi", "Dumbo", "Maléfique", "Cruella de Vil", "Ursula", "Hades", "Gaston", "La Lampe magique", "La Pomme empoisonnée", "La Pantoufle de verre", "La Rose enchantée", "Tapis volant", "Château de la Belle au Bois Dormant", "Miroir magique", "Chariot de Cendrillon", "Raiponce", "Tiana", "Mère Gothel", "Pascal", "Sven", "Kristoff", "Baymax", "Joy", "Sadness", "Bing Bong", "Carl Fredricksen", "Russell", "Dug", "Miguel", "Hector", "Jack Skellington", "Sally", "Oogie Boogie", "Meeko", "Flounder", "Sébastien", "Lumière", "Big Ben", "Mme Samovar", "Zip", "Aladar", "Arlo", "Luca", "Alberto", "Mei Panda Rouge", "Judy Hopps", "Nick Wilde", "Chef Bogo", "Flash le paresseux", "Fix-It Felix", "Wreck-It Ralph", "Penelope von Schweetz", "Kida", "Milo Thatch"],
             starwars: ["Luke Skywalker", "Darth Vader", "Princesse Leia", "Han Solo", "Chewbacca", "Yoda", "Obi-Wan Kenobi", "Lando Calrissian", "Empereur Palpatine", "Boba Fett", "Rey", "Finn", "Kylo Ren", "Grogu", "Le Mandalorien", "Ahsoka Tano", "Poe Dameron", "Mace Windu", "Count Dooku", "General Grievous", "Darth Maul", "Qui-Gon Jinn", "Anakin Skywalker", "Padmé Amidala", "Grand Moff Tarkin", "Jabba le Hutt", "Captain Phasma", "Cassian Andor", "Jyn Erso", "K-2SO", "Sabre laser bleu", "Sabre laser rouge", "Sabre laser vert", "Étoile de la Mort", "Faucon Millenium", "X-Wing", "TIE Fighter", "Blaster", "Détonateur thermique", "Baton de Rey", "Tatooine", "Endor", "Hoth", "Coruscant", "Dagobah", "Mustafar", "Jakku", "Naboo", "Kamino", "Geonosis", "La Force", "Côté Obscur", "R2-D2", "C-3PO", "BB-8", "Stormtrooper", "Clonetrooper", "Ewok", "Wookiee", "Jawa", "Sandcrawler", "AT-AT", "AT-ST", "Speeder Bike", "Star Destroyer", "Holocron", "Code Jedi", "Ordre 66", "Conseil Jedi", "Académie Sith", "Bacta Tank", "Boba Fett Helmet", "Beskar", "Darksaber", "Slave I", "Razor Crest", "TIE Interceptor", "A-Wing", "Y-Wing", "Super Star Destroyer", "Sarlacc", "Bantha", "Tauntaun", "Wampa", "Rodien", "Twi'lek", "Gungan", "Jar Jar Binks", "Sebulba", "Watto", "Darth Plagueis"],
             travel: ["France", "Italie", "Japon", "États-Unis", "Brésil", "Australie", "Égypte", "Canada", "Mexique", "Chine", "Inde", "Espagne", "Grèce", "Thaïlande", "Maroc", "Pérou", "Islande", "Norvège", "Afrique du Sud", "Argentine", "Paris", "Tokyo", "New York", "Rome", "Londres", "Rio de Janeiro", "Sydney", "Le Caire", "Pékin", "Bangkok", "Tour Eiffel", "Statue de la Liberté", "Grande Muraille de Chine", "Pyramides de Gizeh", "Colisée", "Taj Mahal", "Machu Picchu", "Christ Rédempteur", "Pétra", "Acropole d'Athènes", "Passeport", "Valise", "Boussole", "Carte du monde", "Avion", "Sac à dos", "Décalage horaire", "Souvenir", "Billet d'avion", "Appareil photo", "Bateau de croisière", "Hôtel", "Auberge de jeunesse", "Guide touristique", "Escale", "Douane", "Visa", "Monnaie étrangère", "Crème solaire", "Lunettes de soleil", "Gondole de Venise", "Safari", "Aurore boréale", "Plongée sous-marine", "Randonnée en montagne", "Volcano", "Plage de sable blanc", "Désert du Sahara", "Jungle amazonienne", "Fjord", "Allemagne", "Portugal", "Pays-Bas", "Suisse", "Suède", "Chili", "Colombie", "Vietnam", "Indonésie", "Nouvelle-Zélande", "Dubaï", "Istanbul", "Barcelone", "Venise", "Amsterdam", "Los Angeles", "Las Vegas", "San Francisco", "Montréal", "Kyoto", "Big Ben", "Mont Fuji", "Grand Canyon", "Chutes du Niagara", "Mont Everest", "Opéra de Sydney", "Burj Khalifa", "Sagrada Familia", "Mont Saint-Michel"],
             food: ["Pizza", "Burger", "Sushi", "Pâtes Carbonara", "Paëlla", "Tacos", "Couscous", "Fondue Savoyarde", "Raclette", "Crêpe", "Croissant", "Baguette", "Macaron", "Gaufre", "Tiramisu", "Eclair au chocolat", "Tartiflette", "Boeuf Bourguignon", "Cassoulet", "Quiche Lorraine", "Fromage", "Chocolat", "Huile d'olive", "Ail", "Épices", "Piment", "Avocat", "Saumon", "Truffe", "Basilic", "Baguettes chinoises", "Poêle", "Four", "Casserole", "Chef cuisinier", "Menu", "Recette", "Tablier", "Fouet", "Rouleau à pâtisserie", "Guacamole", "Hummus", "Dim Sum", "Ramen", "Pad Thaï", "Kebab", "Fish and Chips", "Nems", "Falafel", "Curry", "Camembert", "Roquefort", "Mozzarella", "Parmesan", "Cheddar", "Gorgonzola", "Brie", "Reblochon", "Feta", "Emmental", "Profiteroles", "Crème brûlée", "Tarte Tatin", "Mousse au chocolat", "Mille-feuille", "Paris-Brest", "Panna Cotta", "Cheesecake", "Churros", "Donut", "Vin rouge", "Champagne", "Café Espresso", "Thé vert", "Jus de fruits", "Cocktail", "Limonade", "Cidre", "Bière", "Eau gazeuse", "Couteau de chef", "Planche à découper", "Spatule", "Tire-bouchon", "Décapsuleur", "Salière", "Poivrier", "Balance de cuisine", "Mixeur", "Cocotte-minute", "Saucisson", "Jambon de Bayonne", "Foie gras", "Huîtres", "Caviar", "Homard", "Crevettes", "Moules frites", "Escargots", "Soupe à l'oignon"],
-            music: ["Guitare", "Piano", "Batterie", "Violon", "Trompette", "Microphone", "Casque audio", "Saxophone", "Flûte", "Basse", "Rock", "Pop", "Rap", "Jazz", "Musique Classique", "Electro", "Reggae", "Heavy Metal", "Blues", "Funk", "Michael Jackson", "Beyoncé", "Freddie Mercury", "Celine Dion", "Eminem", "Daft Punk", "Mozart", "Beethoven", "The Beatles", "Elvis Presley", "Concert", "Festival", "Refrain", "Chorégraphie", "Disque d'or", "Studio d'enregistrement", "Partition", "Solfège", "Chef d'orchestre", "Comédie musicale", "Ampli", "Platine vinyle", "Enceinte Bluetooth", "Synthétiseur", "Harpe", "Ukulélé", "Accordéon", "Tambourin", "Xylophone", "Triangle", "Bob Marley", "David Bowie", "Madonna", "Rihanna", "Lady Gaga", "Coldplay", "Queen", "Rolling Stones", "AC/DC", "Nirvana", "Johnny Hallyday", "Edith Piaf", "Stromae", "Orelsan", "Angèle", "Bigflo et Oli", "Soprano", "Gims", "Jul", "Aya Nakamura", "Acoustique", "Playback", "DJ", "Chorale", "Opéra", "Symphonie", "Ballade", "Solo de guitare", "Beatbox", "Auto-Tune", "Acrobate de scène", "Coulisses", "Billet de concert", "Tournée mondiale", "Clip vidéo", "Bande originale", "Hymne", "Rhythm and blues", "Country", "Ska", "Batterie électronique", "Pédale d'effet", "Métronome", "Diapason", "Cordes de guitare", "Baguettes de batterie", "Pupitre", "Micro HF", "Table de mixage", "Console"],
+            music: ["Guitare", "Piano", "Batterie", "Violon", "Trompette", "Microphone", "Casque audio", "Saxophone", "Flûte", "Basse", "Rock", "Pop", "Rap", "Jazz", "Musique Classique", "Electro", "Reggae", "Heavy Metal", "Blues", "Funk", "Michael Jackson", "Beyoncé", "Freddie Mercury", "Céline Dion", "Eminem", "Daft Punk", "Mozart", "Beethoven", "The Beatles", "Elvis Presley", "Concert", "Festival", "Refrain", "Chorégraphie", "Disque d'or", "Studio d'enregistrement", "Partition", "Solfège", "Chef d'orchestre", "Comédie musicale", "Ampli", "Platine vinyle", "Enceinte Bluetooth", "Synthétiseur", "Harpe", "Ukulélé", "Accordéon", "Tambourin", "Xylophone", "Triangle", "Bob Marley", "David Bowie", "Madonna", "Rihanna", "Lady Gaga", "Coldplay", "Queen", "Rolling Stones", "AC/DC", "Nirvana", "Johnny Hallyday", "Edith Piaf", "Stromae", "Orelsan", "Angèle", "Bigflo et Oli", "Soprano", "Gims", "Jul", "Aya Nakamura", "Acoustique", "Playback", "DJ", "Chorale", "Opéra", "Symphonie", "Ballade", "Solo de guitare", "Beatbox", "Auto-Tune", "Acrobate de scène", "Coulisses", "Billet de concert", "Tournée mondiale", "Clip vidéo", "Bande originale", "Hymne", "Rhythm and blues", "Country", "Ska", "Batterie électronique", "Pédale d'effet", "Métronome", "Diapason", "Cordes de guitare", "Baguettes de batterie", "Pupitre", "Micro HF", "Table de mixage", "Console"],
             sports: ["Football", "Basketball", "Tennis", "Natation", "Rugby", "Judo", "Athlétisme", "Cyclisme", "Formule 1", "Boxe", "Golf", "Gymnastique", "Handball", "Volleyball", "Ski alpin", "Snowboard", "Surfing", "Skateboard", "Équitation", "Escrime", "Ballon", "Raquette", "Piscine", "Stade", "Maillot", "Médaille d'or", "Sifflet d'arbitre", "Chronomètre", "Ring", "Court de tennis", "Kylian Mbappé", "LeBron James", "Rafael Nadal", "Usain Bolt", "Teddy Riner", "Serena Williams", "Cristiano Ronaldo", "Lionel Messi", "Michael Jordan", "Roger Federer", "Jeux Olympiques", "Coupe du Monde", "Grand Chelem", "Carton rouge", "Tir au but", "Marathon", "Tour de France", "Super Bowl", "NBA Finals", "Grand Prix F1", "Crampons", "Gants de boxe", "Casque de vélo", "Protège-dents", "Kimono", "Combinaison de plongée", "Bâtons de ski", "Planche de surf", "Palmes", "Putter", "Arbitre", "Entraîneur", "Supporter", "Podium", "Hymne national", "Trophée", "Prolongations", "Mi-temps", "Penalty", "Hors-jeu", "Antoine Griezmann", "Zinedine Zidane", "Novak Djokovic", "Lewis Hamilton", "Stephen Curry", "Tyson Fury", "Conor McGregor", "Simone Biles", "Katie Ledecky", "Clarisse Agbegnenou", "Escalade", "Tir à l'arc", "Badminton", "Ping-pong", "Aviron", "Canoë-kayak", "Water-polo", "Baseball", "Football américain", "Hockey sur glace", "Ligne d'arrivée", "Faux départ", "Record du monde", "Dopaje", "Esprit sportif", "Fair-play", "Remplaçant", "Capitaine", "Vestiaire", "Sponsor"]
         },
         en: {
@@ -597,10 +601,10 @@
             marvel: ["Iron Man", "Spider-Man", "Capitán América", "Thor", "Hulk", "Viuda Negra", "Ojo de Halcón", "Doctor Strange", "Black Panther", "Ant-Man", "Groot", "Rocket Raccoon", "Star-Lord", "Deadpool", "Thanos", "Loki", "Duende Verde", "Venom", "Cráneo Rojo", "Ultrón", "Mysterio", "Capitana Marvel", "Avispa", "Halcón", "Soldado de Invierno", "Visión", "Wanda Maximoff", "Quicksilver", "Gamora", "Drax", "Nébula", "Mantis", "Nick Fury", "Phil Coulson", "Pepper Potts", "Happy Hogan", "Daredevil", "Punisher", "Jessica Jones", "Luke Cage", "Escudo del Capitán América", "Mjolnir", "Stormbreaker", "Guantelete del Infinito", "Traje de Spider-Man", "Reactor Arc", "Ojo de Agamotto", "Lanza-telarañas", "Wakanda", "Asgard", "Torre de los Avengers", "Kamar-Taj", "Reino Cuántico", "Saber", "Sokovia", "Xandar", "Titán", "Helicarrier", "Gema del Espacio", "Gema de la Mente", "Gema del Poder", "Gema del Tiempo", "Gema de la Realidad", "Gema del Alma", "Vibranium", "Adamantium", "J.A.R.V.I.S.", "F.R.I.D.A.Y.", "S.H.I.E.L.D.", "H.Y.D.R.A.", "Devastadores", "Guardianes de la Galaxia", "Avengers", "Eternos", "Inhumanos", "X-Men", "Lobezno", "Profesor X", "Magneto", "Jean Grey", "Cíclope", "Tormenta", "Pícara", "Bestia", "Mística", "Rondador Nocturno", "Gámbito", "Silver Surfer", "Galactus", "Doctor Doom", "Kingpin", "Electro", "Doc Ock", "Hombre de Arena", "Lagarto", "Buitre"],
             disney: ["Mickey Mouse", "Pato Donald", "Goofy", "Simba", "Mufasa", "Scar", "Aladdín", "El Genio", "Jafar", "Cenicienta", "Blancanieves", "Ariel", "La Bestia", "Bella", "Mulán", "Pocahontas", "Elsa", "Anna", "Olaf", "Vaiana", "Maui", "Mirabel", "Stitch", "Rapunzel", "Flynn Rider", "Woody", "Buzz Lightyear", "Rayo McQueen", "Nemo", "Dory", "Remy", "Wall-E", "Mr. Increíble", "Kuzco", "Hércules", "Tarzán", "Mowgli", "Baloo", "Robin Hood", "Peter Pan", "Capitán Garfio", "Campanilla", "Pinocho", "Bambi", "Dumbo", "Maléfica", "Cruella de Vil", "Úrsula", "Hades", "Gastón", "Lámpara Mágica", "Manzana Envenenada", "Zapato de Cristal", "Rosa Encantada", "Alfombra Mágica", "Castillo de la Bella Durmiente", "Espejo Mágico", "Carruaje de Cenicienta", "Tiana", "Madre Gothel", "Pascal", "Sven", "Kristoff", "Baymax", "Alegría", "Tristeza", "Bing Bong", "Carl Fredricksen", "Russell", "Dug", "Miguel", "Héctor", "Jack Skellington", "Sally", "Oogie Boogie", "Meeko", "Flounder", "Sebastián", "Lumière", "Din Don", "Señora Potts", "Chip", "Aladar", "Arlo", "Luca", "Alberto", "Mei Panda", "Judy Hopps", "Nick Wilde", "Jefe Bogo", "Flash el perezoso", "Félix Reparador", "Rompe Ralph", "Vanellope", "Kida", "Milo Thatch"],
             starwars: ["Luke Skywalker", "Darth Vader", "Princesa Leia", "Han Solo", "Chewbacca", "Yoda", "Obi-Wan Kenobi", "Lando Calrissian", "Emperador Palpatine", "Boba Fett", "Rey", "Finn", "Kylo Ren", "Grogu", "El Mandaloriano", "Ahsoka Tano", "Poe Dameron", "Mace Windu", "Conde Dooku", "General Grievous", "Darth Maul", "Qui-Gon Jinn", "Anakin Skywalker", "Padmé Amidala", "Grand Moff Tarkin", "Jabba el Hutt", "Capitana Phasma", "Cassian Andor", "Jyn Erso", "K-2SO", "Espada láser azul", "Espada láser roja", "Espada láser verde", "Estrella de la Muerte", "Halcón Milenario", "Ala-X", "Caza TIE", "Blaster", "Detonador térmico", "Bastón de Rey", "Tatooine", "Endor", "Hoth", "Coruscant", "Dagobah", "Mustafar", "Jakku", "Naboo", "Kamino", "Geonosis", "La Fuerza", "Lado Oscuro", "R2-D2", "C-3PO", "BB-8", "Stormtrooper", "Clonetrooper", "Ewok", "Wookiee", "Jawa", "Reptador de las Arenas", "AT-AT", "AT-ST", "Moto Jet", "Destructor Estelar", "Holocrón", "Código Jedi", "Orden 66", "Consejo Jedi", "Academia Sith", "Tanque de Bacta", "Casco de Boba Fett", "Beskar", "Darksaber", "Esclavo I", "Razor Crest", "Interceptor TIE", "Ala-A", "Ala-Y", "Súper Destructor Estelar", "Sarlacc", "Bantha", "Tauntaun", "Wampa", "Rodiano", "Twi'lek", "Gungan", "Jar Jar Binks", "Sebulba", "Watto", "Darth Plagueis"],
-            travel: ["Francia", "Italia", "Japón", "Estados Unidos", "Brasil", "Australia", "Egipto", "Canadá", "México", "China", "India", "España", "Grecia", "Tailandia", "Marruecos", "Perú", "Islandia", "Noruega", "Sudáfrica", "Argentina", "París", "Tokio", "Nueva York", "Roma", "Londres", "Río de Janeiro", "Sídney", "El Cairo", "Pekín", "Bangkok", "Torre Eiffel", "Estatua de la Libertad", "Gran Muralla China", "Pirámides de Giza", "Coliseo", "Taj Mahal", "Machu Picchu", "Christ Rédempteur", "Pétra", "Acropole d'Athènes", "Pasaporte", "Maleta", "Brújula", "Mapa del mundo", "Avión", "Mochila", "Jet Lag", "Recuerdo", "Billete de avión", "Cámara de fotos", "Crucero", "Hotel", "Hostal", "Guía turístico", "Escala", "Aduana", "Visado", "Moneda extranjera", "Protector solar", "Gafas de sol", "Góndola de Venecia", "Safari", "Aurora boreal", "Submarinismo", "Senderismo", "Volcán", "Playa de arena blanca", "Desierto del Sahara", "Selva Amazónica", "Fiordo", "Alemania", "Portugal", "Países Bajos", "Suiza", "Suecia", "Chile", "Colombia", "Vietnam", "Indonesia", "Nueva Zelanda", "Dubái", "Istanbul", "Barcelone", "Venise", "Ámsterdam", "Los Ángeles", "Las Vegas", "San Francisco", "Montreal", "Kioto", "Big Ben", "Monte Fuji", "Gran Cañón", "Cataratas del Niágara", "Monte Everest", "Ópera de Sídney", "Burj Khalifa", "Sagrada Familia", "Mont Saint-Michel"],
+            travel: ["Francia", "Italia", "Japón", "Estados Unidos", "Brasil", "Australia", "Egipto", "Canadá", "México", "China", "India", "España", "Grecia", "Tailandia", "Marruecos", "Perú", "Islandia", "Noruega", "Sudáfrica", "Argentina", "París", "Tokio", "Nueva York", "Rome", "Londres", "Río de Janeiro", "Sydney", "El Cairo", "Pekín", "Bangkok", "Torre Eiffel", "Estatua de la Libertad", "Gran Muralla China", "Pirámides de Giza", "Coliseo", "Taj Mahal", "Machu Picchu", "Christ Rédempteur", "Pétra", "Acropole d'Athènes", "Pasaporte", "Maleta", "Brújula", "Mapa del mundo", "Avión", "Mochila", "Jet Lag", "Recuerdo", "Billete de avión", "Cámara de fotos", "Crucero", "Hotel", "Hostal", "Guía turístico", "Escala", "Aduana", "Visado", "Moneda extranjera", "Protector solar", "Gafas de sol", "Góndola de Venecia", "Safari", "Aurora boreal", "Submarinismo", "Senderismo", "Volcán", "Playa de arena blanca", "Desierto del Sahara", "Selva Amazónica", "Fiordo", "Alemania", "Portugal", "Países Bajos", "Suiza", "Suecia", "Chile", "Colombia", "Vietnam", "Indonesia", "Nueva Zelanda", "Dubái", "Istanbul", "Barcelone", "Venise", "Ámsterdam", "Los Ángeles", "Las Vegas", "San Francisco", "Montreal", "Kioto", "Big Ben", "Monte Fuji", "Gran Cañón", "Cataratas del Niágara", "Monte Everest", "Ópera de Sídney", "Burj Khalifa", "Sagrada Familia", "Mont Saint-Michel"],
             food: ["Pizza", "Hamburguesa", "Sushi", "Pasta Carbonara", "Paella", "Tacos", "Cuscús", "Fondue de queso", "Raclette", "Crepe", "Croissant", "Baguette", "Macaron", "Gofrado", "Tiramisú", "Palo de catalán", "Tortitas", "Estofado de ternera", "Lasaña", "Quiche", "Queso", "Chocolate", "Aceite de oliva", "Ajo", "Especias", "Picante", "Aguacate", "Salmón", "Trufa", "Albahaca", "Palillos chinos", "Sartén", "Horno", "Cazuela", "Chef", "Menú", "Receta", "Delantal", "Varilla", "Rodillo de cocina", "Guacamole", "Hummus", "Dim Sum", "Ramen", "Pad Thai", "Kebab", "Fish and Chips", "Rollitos de primavera", "Falafel", "Curry", "Camembert", "Roquefort", "Mozzarella", "Parmesano", "Cheddar", "Gorgonzola", "Brie", "Feta", "Gouda", "Emmental", "Profiteroles", "Tarta de manzana", "Mousse de chocolate", "Tarta de queso", "Churros", "Donut", "Brownie", "Vino tinto", "Champán", "Café Solo", "Té verde", "Zumo de frutas", "Cóctel", "Limonada", "Sidra", "Cerveza", "Agua con gas", "Cuchillo de chef", "Tabla de cortar", "Espátula", "Sacacorchos", "Abridor", "Salero", "Pimentero", "Báscula de cocina", "Batidora", "Olla a presión", "Salchicha", "Jamón", "Foie Gras", "Ostras", "Caviares", "Langosta", "Gambas", "Mejillones", "Caracoles", "Sopa de cebolla"],
             music: ["Guitarra", "Piano", "Batería", "Violín", "Trompeta", "Micrófono", "Auriculares", "Saxofón", "Flauta", "Bajo", "Rock", "Pop", "Rap", "Jazz", "Música Clásica", "Electro", "Reggae", "Heavy Metal", "Blues", "Funk", "Michael Jackson", "Beyoncé", "Freddie Mercury", "Celine Dion", "Eminem", "Daft Punk", "Mozart", "Beethoven", "The Beatles", "Elvis Presley", "Concierto", "Festival", "Estribillo", "Coreografía", "Disco de oro", "Estudio de grabación", "Partitura", "Director de orquesta", "Musical", "Amplificador", "Tocadiscos", "Altavoz Bluetooth", "Sintetizador", "Arpa", "Ukelele", "Acordeón", "Pandereta", "Xilófono", "Triángulo", "Bob Marley", "David Bowie", "Madonna", "Rihanna", "Lady Gaga", "Coldplay", "Queen", "Rolling Stones", "AC/DC", "Nirvana", "Shakira", "Bad Bunny", "Rosalía", "Julio Iglesias", "Alejandro Sanz", "Enrique Iglesias", "Luis Miguel", "Daddy Yankee", "Acústico", "Playback", "DJ", "Coro", "Ópera", "Sinfonía", "Balada", "Solo de guitarra", "Beatbox", "Auto-Tune", "Escenario", "Camerino", "Entrada de concierto", "Gira mundial", "Vídeo musical", "Banda sonora", "Himno", "Rhythm and Blues", "Country", "Ska", "Batería electrónica", "Pedal de efectos", "Metrónomo", "Diapasón", "Cuerdas de guitarra", "Baquetas", "Atril", "Micrófono inalámbrico", "Mesa de mezclas"],
-            sports: ["Fútbol", "Baloncesto", "Tenis", "Natación", "Rugby", "Judo", "Atletismo", "Ciclismo", "Fórmula 1", "Boxeo", "Golf", "Gimnasia", "Balonmano", "Voleibol", "Esquí", "Snowboard", "Surf", "Skateboarding", "Equitación", "Esgrima", "Balón", "Raqueta", "Piscina", "Estadio", "Camiseta", "Medalla de oro", "Silbato de árbitro", "Cronómetro", "Ring", "Pista de tenis", "Kylian Mbappé", "LeBron James", "Rafael Nadal", "Usain Bolt", "Serena Williams", "Cristiano Ronaldo", "Lionel Messi", "Michael Jordan", "Roger Federer", "Fernando Alonso", "Juegos Olímpicos", "Copa del Mundo", "Grand Slam", "Tarjeta roja", "Penalti", "Maratón", "Tour de Francia", "Super Bowl", "Finales de la NBA", "Gran Premio de F1", "Botas de fútbol", "Guantes de boxeo", "Casco de bici", "Protector bucal", "Kimono", "Traje de neopreno", "Bastones de esquí", "Tabla de surf", "Aletas", "Putter", "Árbitro", "Entrenador", "Aficionado", "Podio", "Himno nacional", "Trofeo", "Prórroga", "Descanso", "Fuera de juego", "Antoine Griezmann", "Zinedine Zidane", "Novak Djokovic", "Lewis Hamilton", "Stephen Curry", "Tyson Fury", "Conor McGregor", "Simone Biles", "Katie Ledecky", "Escalada", "Tiro con arco", "Bádminton", "Tenis de mesa", "Remo", "Piragüismo", "Waterpolo", "Béisbol", "Fútbol americano", "Hockey sobre hielo", "Línea de meta", "Salida nula", "Récord mundial", "Dopaje", "Espíritu deportivo", "Juego limpio", "Suplente", "Capitán", "Vestuario", "Patrocinador"]
+            sports: ["Fútbol", "Baloncesto", "Tenis", "Natación", "Rugby", "Judo", "Atletismo", "Ciclismo", "Fórmula 1", "Boxeo", "Golf", "Gimnasia", "Balonmano", "Voleibol", "Esquí", "Snowboard", "Surf", "Skateboarding", "Equitación", "Esgrima", "Balón", "Raqueta", "Piscina", "Estadio", "Camiseta", "Medalla de oro", "Silbato de árbitro", "Cronómetro", "Ring", "Pista de tenis", "Kylian Mbappé", "LeBron James", "Rafael Nadal", "Usain Bolt", "Serena Williams", "Cristiano Ronaldo", "Lionel Messi", "Michael Jordan", "Roger Federer", "Fernando Alonso", "Juegos Olímpicos", "Copa del Mundo", "Grand Slam", "Tarjeta roja", "Penalti", "Maratón", "Tour de Francia", "Super Bowl", "Finales de la NBA", "Gran Premio de F1", "Botas de fútbol", "Guantes de boxeo", "Casco de bici", "Protector bucal", "Kimono", "Traje de neopreno", "Bastones de esquí", "Tabla de surf", "Aletas", "Putter", "Árbitro", "Entrenador", "Aficionado", "Podio", "Himno nacional", "Trofeo", "Prórroga", "Descanso", "Fuera de juego", "Antoine Griezmann", "Zinedine Zidane", "Novak Djokovic", "Lewis Hamilton", "Stephen Curry", "Tyson Fury", "Conor McGregor", "Simone Biles", "Katie Ledecky", "Escalada", "Tiro con arco", "Badminton", "Tenis de mesa", "Remo", "Piragüismo", "Waterpolo", "Béisbol", "Fútbol americano", "Hockey sobre hielo", "Línea de meta", "Salida nula", "Récord mundial", "Dopaje", "Espíritu deportivo", "Fair-play", "Suplente", "Capitán", "Vestuario", "Patrocinador"]
         }
     };
 
@@ -689,7 +693,7 @@
     }
 
     function startGame() {
-        initAudio();
+        unlockAudio();
 
         const countInput = parseInt(document.getElementById('word-count').value);
         const wordCount = Math.max(10, Math.min(100, countInput || 30));
@@ -788,7 +792,7 @@
     function startTurn() {
         if (remainingWords.length === 0) return;
 
-        initAudio();
+        unlockAudio();
 
         isTurnActive = true;
         document.getElementById('start-turn-btn').style.display = 'none';
