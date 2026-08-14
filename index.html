@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rush'Up! Game v1.03.54</title>
+    <title>Rush'Up! Game v1.03.55</title>
     
     <!-- LIAISON MANIFEST & PWA METADATA -->
     <link rel="manifest" href="./manifest.json">
@@ -98,7 +98,7 @@
 
         body.on-landing .brand-header-outer { visibility: hidden; }
 
-        /* Grand conteneur principal : Taille fixe exacte calquée sur le jeu actif */
+        /* Grand conteneur principal */
         .game-card {
             background: transparent;
             backdrop-filter: none;
@@ -108,8 +108,7 @@
             padding: 16px 14px;
             width: 100%;
             max-width: 480px;
-            min-height: 520px;
-            height: 520px;
+            min-height: 500px;
             box-shadow: none;
             display: flex;
             flex-direction: column;
@@ -117,7 +116,6 @@
             position: relative;
             z-index: 2;
             transition: all 0.3s ease;
-            overflow-y: auto;
         }
 
         /* Contour réactivé uniquement pendant l'écran de jeu */
@@ -709,17 +707,17 @@
             color: var(--text-muted);
         }
 
-        /* Footer collé tout en bas de l'écran */
+        /* Footer remanié avec marge de sécurité pour iPhone */
         .version-footer {
             font-size: 0.72rem;
             color: var(--text-muted);
-            opacity: 0.8;
+            opacity: 0.85;
             margin-top: auto;
-            padding-top: 14px;
-            padding-bottom: 8px;
+            padding-top: 16px;
+            padding-bottom: max(28px, env(safe-area-inset-bottom));
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 6px;
             align-items: center;
             justify-content: center;
             line-height: 1.3;
@@ -798,6 +796,24 @@
             gap: 14px;
             transform: scale(0.9);
             transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        /* Croix de fermeture en haut à droite pour la modale */
+        .modal-close-cross {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            font-size: 1.4rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.2s;
+            line-height: 1;
+            z-index: 10;
+        }
+
+        .modal-close-cross:hover {
+            color: var(--primary);
         }
 
         .modal-overlay.active .modal-card { transform: scale(1); }
@@ -897,6 +913,7 @@
 <!-- Modal des Explications d'installation iOS -->
 <div id="ios-install-modal" class="modal-overlay">
     <div class="modal-card">
+        <span class="modal-close-cross" onclick="closeIosInstallModal()">✖</span>
         <div class="modal-icon">📲</div>
         <div class="modal-title" id="ios-modal-title">Installer sur iPhone / iPad</div>
         <div class="modal-body" id="ios-modal-body" style="font-size: 0.85rem;">
@@ -910,9 +927,15 @@
 <!-- Modal des Règles de jeu -->
 <div id="rules-modal" class="modal-overlay">
     <div class="modal-card">
+        <!-- Croix de fermeture en haut à droite -->
+        <span class="modal-close-cross" onclick="closeRulesModal()">✖</span>
+
         <div class="modal-icon">📜</div>
         <div class="modal-title" id="rules-modal-header">Rush'Up! Rules</div>
         
+        <!-- Bouton de fermeture supérieur supplémentaire pour l'accessibilité iOS -->
+        <button class="btn btn-primary" id="rules-close-btn-top" onclick="closeRulesModal()" style="margin-bottom: 8px;">Close</button>
+
         <div class="modal-body" id="rules-modal-content">
             <!-- Rempli dynamiquement en JS -->
         </div>
@@ -932,7 +955,7 @@
     </div>
 </div>
 
-<!-- Conteneur principal de l'application (Taille fixe exacte en jeu) -->
+<!-- Conteneur principal de l'application -->
 <div class="game-card">
     <!-- Écran d'accueil de bienvenue / Langue (Landing Screen) -->
     <div id="landing-screen" class="screen active">
@@ -1122,7 +1145,7 @@
 
 <!-- Footer positionné en dehors de la carte de jeu et collé en bas -->
 <div class="version-footer">
-    <div>Version 1.03.54 Ultimate Edition by Arnaud Arnaud</div>
+    <div>Version 1.03.55 Ultimate Edition by Arnaud Arnaud</div>
     <div>Made with <span class="heart-icon">❤️</span> in Paris 🇫🇷</div>
 
     <!-- Bouton d'installation PWA -->
@@ -1745,7 +1768,7 @@
             travel: ["France", "Italie", "Japon", "États-Unis", "Brésil", "Australie", "Égypte", "Canada", "Mexique", "Chine", "Inde", "Espagne", "Grèce", "Thaïlande", "Maroc", "Pérou", "Islande", "Norvège", "Afrique du Sud", "Argentine", "Paris", "Tokyo", "New York", "Rome", "Londres", "Rio de Janeiro", "Sydney", "Le Caire", "Pékin", "Bangkok", "Tour Eiffel", "Statue de la Liberté", "Grande Muraille de Chine", "Pyramides de Gizeh", "Colisée", "Taj Mahal", "Machu Picchu", "Christ Rédempteur", "Pétra", "Acropole d'Athènes", "Passeport", "Valise", "Boussole", "Carte du monde", "Avion", "Sac à dos", "Décalage horaire", "Souvenir", "Billet d'avion", "Appareil photo", "Bateau de croisière", "Hôtel", "Auberge de jeunesse", "Guide touristique", "Escale", "Douane", "Visa", "Monnaie étrangère", "Crème solaire", "Lunettes de soleil", "Gondole de Venise", "Safari", "Aurore boréale", "Plongée sous-marine", "Randonnée en montagne", "Volcano", "Plage de sable blanc", "Désert du Sahara", "Jungle amazonienne", "Fjord", "Allemagne", "Portugal", "Pays-Bas", "Suisse", "Suède", "Chili", "Colombie", "Vietnam", "Indonésie", "Nouvelle-Zélande", "Dubaï", "Istanbul", "Barcelone", "Venise", "Amsterdam", "Los Angeles", "Las Vegas", "San Francisco", "Montréal", "Kyoto", "Big Ben", "Mont Fuji", "Grand Canyon", "Chutes du Niagara", "Mont Everest", "Opéra de Sydney", "Burj Khalifa", "Sagrada Familia", "Mont Saint-Michel"],
             food: ["Pizza", "Burger", "Sushi", "Pâtes Carbonara", "Paëlla", "Tacos", "Couscous", "Fondue Savoyarde", "Raclette", "Crêpe", "Croissant", "Baguette", "Macaron", "Gaufre", "Tiramisu", "Eclair au chocolat", "Tartiflette", "Boeuf Bourguignon", "Cassoulet", "Quiche Lorraine", "Fromage", "Chocolat", "Huile d'olive", "Ail", "Épices", "Piment", "Avocat", "Saumon", "Truffe", "Basilic", "Baguettes chinoises", "Poêle", "Four", "Casserole", "Chef cuisinier", "Menu", "Recette", "Tablier", "Fouet", "Rouleau à pâtisserie", "Guacamole", "Hummus", "Dim Sum", "Ramen", "Pad Thaï", "Kebab", "Fish and Chips", "Nems", "Falafel", "Curry", "Camembert", "Roquefort", "Mozzarella", "Parmesan", "Cheddar", "Gorgonzola", "Brie", "Reblochon", "Feta", "Emmental", "Profiteroles", "Crème brûlée", "Tarte Tatin", "Mousse au chocolat", "Mille-feuille", "Paris-Brest", "Panna Cotta", "Cheesecake", "Churros", "Donut", "Vin rouge", "Champagne", "Café Espresso", "Thé vert", "Jus de fruits", "Cocktail", "Limonade", "Cidre", "Bière", "Eau gazeuse", "Couteau de chef", "Planche à découper", "Spatule", "Tire-bouchon", "Décapsuleur", "Salière", "Poivrier", "Balance de cuisine", "Mixeur", "Cocotte-minute", "Saucisson", "Jambon de Bayonne", "Foie gras", "Huîtres", "Caviar", "Homard", "Crevettes", "Moules frites", "Escargots", "Soupe à l'oignon"],
             music: ["Guitare", "Piano", "Batterie", "Violon", "Trompette", "Microphone", "Casque audio", "Saxophone", "Flûte", "Basse", "Rock", "Pop", "Rap", "Jazz", "Musique Classique", "Electro", "Reggae", "Heavy Metal", "Blues", "Funk", "Michael Jackson", "Beyoncé", "Freddie Mercury", "Celine Dion", "Eminem", "Daft Punk", "Mozart", "Beethoven", "The Beatles", "Elvis Presley", "Concert", "Festival", "Refrain", "Chorégraphie", "Disque d'or", "Studio d'enregistrement", "Partition", "Solfège", "Chef d'orchestre", "Comédie musicale", "Ampli", "Platine vinyle", "Enceinte Bluetooth", "Synthétiseur", "Harpe", "Ukulélé", "Accordéon", "Tambourin", "Xylophone", "Triangle", "Bob Marley", "David Bowie", "Madonna", "Rihanna", "Lady Gaga", "Coldplay", "Queen", "Rolling Stones", "AC/DC", "Nirvana", "Johnny Hallyday", "Edith Piaf", "Stromae", "Orelsan", "Angèle", "Bigflo et Oli", "Soprano", "Gims", "Jul", "Aya Nakamura", "Acoustique", "Playback", "DJ", "Chorale", "Opéra", "Symphonie", "Ballade", "Solo de guitare", "Beatbox", "Auto-Tune", "Acrobate de scène", "Coulisses", "Billet de concert", "Tournée mondiale", "Clip vidéo", "Bande originale", "Hymne", "Rhythm and blues", "Country", "Ska", "Batterie électronique", "Pédale d'effet", "Métronome", "Diapason", "Cordes de guitare", "Baguettes de batterie", "Pupitre", "Micro HF", "Table de mixage", "Console"],
-            sports: ["Football", "Basketball", "Tennis", "Natation", "Rugby", "Judo", "Athlétisme", "Cyclisme", "Formule 1", "Boxe", "Golf", "Gymnastique", "Handball", "Volleyball", "Ski alpin", "Snowboard", "Surfing", "Skateboarding", "Équitation", "Escrime", "Ballon", "Raquette", "Piscine", "Stade", "Maillot", "Médaille d'or", "Sifflet d'arbitre", "Chronomètre", "Ring", "Court de tennis", "Kylian Mbappé", "LeBron James", "Rafael Nadal", "Usain Bolt", "Teddy Riner", "Serena Williams", "Cristiano Ronaldo", "Lionel Messi", "Michael Jordan", "Roger Federer", "Jeux Olympiques", "Coupe du Monde", "Grand Chelem", "Carton rouge", "Tir au but", "Marathon", "Tour de France", "Super Bowl", "NBA Finals", "Gran Prix F1", "Crampons", "Gants de boxe", "Casque de vélo", "Protège-dents", "Kimono", "Combinaison de plongée", "Bâtons de ski", "Palmes", "Putter", "Arbitre", "Entraîneur", "Supporter", "Podium", "Hymne national", "Trophée", "Prolongations", "Mi-temps", "Penalty", "Hors-jeu", "Antoine Griezmann", "Zinedine Zidane", "Novak Djokovic", "Lewis Hamilton", "Stephen Curry", "Tyson Fury", "Conor McGregor", "Simone Biles", "Katie Ledecky", "Clarisse Agbegnenou", "Escalade", "Tir à l'arc", "Badminton", "Ping-pong", "Aviron", "Canoë-kayak", "Water-polo", "Baseball", "Football américain", "Hockey sur glace", "Ligne d'arrivée", "Faux départ", "Record du monde", "Dopaje", "Espíritu deportivo", "Fair-play", "Suplente", "Capitaine", "Vestiaire", "Sponsor"]
+            sports: ["Football", "Basketball", "Tennis", "Natation", "Rugby", "Judo", "Athlétisme", "Cyclisme", "Formule 1", "Boxe", "Golf", "Gymnastique", "Handball", "Volleyball", "Ski alpin", "Snowboard", "Surfing", "Skateboarding", "Équitation", "Escrime", "Ballon", "Raquette", "Piscine", "Stade", "Maillot", "Médaille d'or", "Sifflet d'arbitre", "Chronomètre", "Ring", "Court de tennis", "Kylian Mbappé", "LeBron James", "Rafael Nadal", "Usain Bolt", "Teddy Riner", "Serena Williams", "Cristiano Ronaldo", "Lionel Messi", "Michael Jordan", "Roger Federer", "Jeux Olympiques", "Coupe du Monde", "Grand Chelem", "Carton rouge", "Tir au but", "Marathon", "Tour de France", "Super Bowl", "NBA Finals", "Gran Prix F1", "Crampons", "Gants de boxe", "Casque de vélo", "Protège-dents", "Kimono", "Combinaison de plongée", "Bâtons de ski", "Palmes", "Putter", "Arbitre", "Entraîneur", "Supporter", "Podium", "Hymne national", "Trophée", "Prolongations", "Mi-temps", "Penalty", "Hors-jeu", "Antoine Griezmann", "Zinedine Zidane", "Novak Djokovic", "Lewis Hamilton", "Stephen Curry", "Tyson Fury", "Conor McGregor", "Simone Biles", "Katie Ledecky", "Clarisse Agbegnenou", "Escalade", "Tiro con arco", "Bádminton", "Tenis de mesa", "Remo", "Piragüismo", "Waterpolo", "Baseball", "Football americano", "Hockey sobre hielo", "Línea de meta", "Salida nula", "Record mundial", "Dopaje", "Espíritu deportivo", "Fair-play", "Suplente", "Capitaine", "Vestuario", "Patrocinador"]
         }
     };
 
@@ -1777,7 +1800,6 @@
 
     let deferredPrompt = null;
     
-    // Détection iOS avancée (ex: Safari iPhone/iPad)
     const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
 
@@ -1873,6 +1895,7 @@
 
         document.getElementById('rules-modal-header').innerText = fr.header;
         document.getElementById('rules-close-btn').innerText = t.btnRulesClose;
+        document.getElementById('rules-close-btn-top').innerText = t.btnRulesClose;
 
         container.innerHTML = `
             <p style="font-style: italic; color: #70a1ff;">${fr.digitalIntro}</p>
@@ -2689,8 +2712,4 @@
 
 </body>
 </html>
-
-
-
-
 
