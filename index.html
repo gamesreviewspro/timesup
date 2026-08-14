@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rush'Up! Game v1.03.48</title>
+    <title>Rush'Up! Game v1.03.50</title>
     
     <!-- LIAISON MANIFEST & PWA METADATA -->
     <link rel="manifest" href="./manifest.json">
@@ -305,6 +305,7 @@
             box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
             position: relative;
             overflow: hidden;
+            text-decoration: none;
         }
 
         .btn::after {
@@ -368,11 +369,32 @@
             cursor: pointer;
             margin-top: 6px;
             transition: all 0.2s ease;
+            display: inline-block;
         }
 
         .btn-pwa-install:hover {
             background: rgba(112, 161, 255, 0.3);
             border-color: #70a1ff;
+        }
+
+        .donate-btn {
+            background: rgba(255, 71, 87, 0.15);
+            color: #ff4757;
+            border: 1px solid rgba(255, 71, 87, 0.4);
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 4px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .donate-btn:hover {
+            background: rgba(255, 71, 87, 0.3);
+            border-color: #ff4757;
         }
 
         .btn-group {
@@ -852,7 +874,7 @@
             <p id="ios-step1">1. Appuyez sur le bouton <strong>Partager ⎋</strong> en bas de votre navigateur Safari.</p>
             <p id="ios-step2">2. Défilez vers le bas et sélectionnez <strong>Sur l'écran d'accueil ⊕</strong>.</p>
         </div>
-        <button class="btn btn-primary" onclick="closeIosInstallModal()">Compris !</button>
+        <button class="btn btn-primary" id="ios-modal-close-btn" onclick="closeIosInstallModal()">Got it!</button>
     </div>
 </div>
 
@@ -1065,12 +1087,18 @@
     </div>
 
     <div class="version-footer">
-        <div>Version 1.03.48 Ultimate Edition by Arnaud Arnaud</div>
+        <div>Version 1.03.50 Ultimate Edition by Arnaud Arnaud</div>
         <div>Made with <span class="heart-icon">❤️</span> in Paris 🇫🇷</div>
-        <!-- Bouton d'installation de l'Application PWA -->
-        <button id="pwa-install-btn" class="btn-pwa-install" style="display: none;" onclick="triggerPwaInstall()">
-            📲 Installer l'application
+
+        <!-- Bouton d'installation PWA -->
+        <button id="pwa-install-btn" class="btn-pwa-install" onclick="triggerPwaInstall()">
+            📲 Install Application
         </button>
+
+        <!-- Bouton de Don PayPal -->
+        <a href="https://www.paypal.com/donate?hosted_button_id=2NGJSLT76DX2G" target="_blank" rel="noopener noreferrer" class="donate-btn" id="donate-btn">
+            ❤️ Support the developer
+        </a>
     </div>
 </div>
 
@@ -1274,9 +1302,11 @@
             btnSkip: "↩️ Passer",
             btnFound: "✅ Trouvé !",
             btnInstallPwa: "📲 Installer l'application",
+            btnDonate: "❤️ Soutenir le développeur",
             iosTitle: "Installer sur iPhone / iPad",
             iosStep1: "1. Appuyez sur le bouton <strong>Partager ⎋</strong> en bas de votre navigateur Safari.",
             iosStep2: "2. Défilez vers le bas et sélectionnez <strong>Sur l'écran d'accueil ⊕</strong>.",
+            iosGotIt: "Compris !",
             team: "Équipe",
             turn: "Tour :",
             activePlayerLabel: "C'est au tour de :",
@@ -1366,7 +1396,7 @@
                 trophiesTitle: "🏆 Les Trophées (Mode Expert)",
                 trophy1: "🚄 **Le TGV** : Plus grand nombre de mots devinés en un seul tour.",
                 trophy2: "🧠 **Le Cerveau** : Meilleur ratio Mots trouvés / Mots passés.",
-                trophy3: "🐟 **Le Poisson Rouge** : Le mot le plus souvent passé au cours d'une manche."
+                trophy3: "🐟 **Le Poisson Rouge** : Le mot le plus souvent passé au cours d'une même manche."
             }
         },
         en: {
@@ -1414,9 +1444,11 @@
             btnSkip: "↩️ Pass",
             btnFound: "✅ Got it!",
             btnInstallPwa: "📲 Install Application",
+            btnDonate: "❤️ Support the developer",
             iosTitle: "Install on iPhone / iPad",
             iosStep1: "1. Tap the <strong>Share ⎋</strong> button at the bottom of Safari.",
             iosStep2: "2. Scroll down and select <strong>Add to Home Screen ⊕</strong>.",
+            iosGotIt: "Got it!",
             team: "Team",
             turn: "Turn:",
             activePlayerLabel: "It is turn of:",
@@ -1554,9 +1586,11 @@
             btnSkip: "↩️ Pasar",
             btnFound: "✅ ¡Conseguido!",
             btnInstallPwa: "📲 Descargar la aplicación",
+            btnDonate: "❤️ Apoyar al desarrollador",
             iosTitle: "Instalar en iPhone / iPad",
             iosStep1: "1. Toca el botón <strong>Compartir ⎋</strong> en la parte inferior de Safari.",
             iosStep2: "2. Desplázate hacia abajo y selecciona <strong>Añadir a la pantalla de inicio ⊕</strong>.",
+            iosGotIt: "¡Entendido!",
             team: "Equipo",
             turn: "Turno:",
             activePlayerLabel: "Es el turno de:",
@@ -1682,7 +1716,7 @@
         en: {
             gen_easy: ["Bottle", "Sun", "Car", "House", "Flower", "Dog", "Cat", "Book", "Tree", "Chair", "Table", "Phone", "Apple", "Bread", "Bicycle", "Pencil", "Cake", "Television", "Bed", "Door", "Window", "Fish", "Bird", "Beach", "Snow", "Rain", "Hat", "Shoe", "Milk", "Chocolate", "Pizza", "Ice Cream", "Clock", "Mirror", "Toothbrush", "Soap", "Coat", "Swing", "Ball", "Sand", "Sea", "Moon", "Star", "Cloud", "Airplane", "Boat", "Train", "Whistle", "Lamp", "Backpack", "Cap", "Glasses", "Guitar", "Piano", "Bathtub", "Cup", "Spoon", "Fork", "Plate", "Towel", "Glass", "Pajamas", "Sock", "Scissors", "Paper", "Gift", "Bag", "Scooter", "Watering Can", "Duck", "Rabbit", "Cow", "Pig", "Horse", "Sheep", "Hen", "Rooster", "Pigeon", "Frog", "Turtle", "Monkey", "Lion", "Elephant", "Giraffe", "Bear", "Panda", "Dolphin", "Whale", "Shark", "Strawberry", "Banana", "Orange", "Lemon", "Tomato", "Carrot", "Cheese", "Butter", "Sugar"],
             gen_medium: ["Maze", "Avalanche", "Eclipse", "Seismograph", "Compass", "Cave", "Submarine", "Microscope", "Telescope", "Waterfall", "Lighthouse", "Chameleon", "Asteroid", "Symphony", "Fog", "Tornado", "Quicksand", "Cathedral", "Pyramid", "Hourglass", "Caravan", "Remote Control", "Hair Dryer", "Lawnmower", "Fan", "Vacuum Cleaner", "Toaster", "Coffee Maker", "Microwave", "Alarm Clock", "Thermometer", "Barometer", "Fencing", "Climbing", "Archery", "Diving", "Horse Riding", "Skateboarding", "Table Tennis", "Badminton", "Marathon", "Kayak", "Snowboard", "Surfing", "Helicopter", "Hot Air Balloon", "Rocket", "Satellite", "Train Station", "Airport", "Library", "Museum", "Cinema", "Theater", "Opera", "Stadium", "Ice Rink", "Swimming Pool", "Zoo", "Circus", "Bakery", "Pharmacy", "Hospital", "Police Station", "Post Office", "City Hall", "Castle", "Fortress", "Keep", "Mill", "Bridge", "Tunnel", "Dam", "Harbor", "Border", "Capital", "Continent", "Island", "Peninsula", "Volcano", "Crater", "Geyser", "Glacier", "Iceberg", "Desert", "Oasis", "Jungle", "Savannah", "Tundra", "Reef", "Lagoon", "Archipelago", "Canyon", "Valley"],
-            gen_hard: ["Procrastination", "Anachronism", "Alchemy", "Pharaoh", "Calligraphy", "Sarcophagus", "Hypothesis", "Metempsychosis", "Cryptography", "Amphitheater", "Metamorphosis", "Cartography", "Archaeology", "Paleontology", "Philosophy", "Anthropology", "Meteorology", "Chronology", "Genealogy", "Mythology", "Astrology", "Astronomy", "Anatomy", "Seismology", "Volcanology", "Theory", "Axiom", "Paradox", "Ouroboros", "Minotaur", "Centaur", "Gorgon", "Sphinx", "Salamander", "Phoenix", "Gargoyle", "Catacombs", "Mausoleum", "Obelisk", "Parthenon", "Colosseum", "Acropolis", "Necropolis", "Penthouse", "Hermeneutics", "Epistemology", "Retrospective", "Perspicacity", "Benevolence", "Magnanimity", "Altruism", "Empiricism", "Pragmatism", "Skepticism", "Stoicism", "Epicureanism", "Syllogism", "Rhetoric", "Eloquence", "Sophism", "Allegory", "Metaphor", "Hyperbole", "Oxymoron", "Litotes", "Periphrasis", "Euphemism", "Onomatopoeia", "Pleonasm", "Anagram", "Palindrome", "Acrostic", "Sonnet", "Alexandrine", "Calligram", "Soliloquy", "Monologue", "Tirade", "Quiproquo", "Plot", "Twist", "Denouement", "Prologues", "Epilogue", "Catharsis", "Playwright", "Scenographer", "Choreographer", "Conductor", "Virtuoso", "Patron", "Philanthropist", "Polyglot", "Autodidact", "Scholar", "Visionary", "Precursor"],
+            gen_hard: ["Procrastination", "Anachronism", "Alchemy", "Pharaoh", "Calligraphy", "Sarcophagus", "Hypothesis", "Metempsychosis", "Cryptography", "Amphitheater", "Metamorphosis", "Cartography", "Archaeology", "Paleontology", "Philosophy", "Anthropology", "Meteorology", "Chronology", "Genealogy", "Mythology", "Astrology", "Astronomy", "Anatomy", "Seismology", "Volcanology", "Theory", "Axiom", "Paradox", "Ouroboros", "Minotaur", "Centaur", "Gorgon", "Sphinx", "Salamander", "Phoenix", "Gargoyle", "Catacombs", "Mausoleum", "Obelisk", "Parthenon", "Colosseum", "Acropolis", "Necropolis", "Penthouse", "Hermeneutics", "Epistemology", "Retrospective", "Perspicacity", "Benevolence", "Magnanimity", "Altruism", "Empiricism", "Pragmatisme", "Skepticism", "Stoicism", "Epicureanism", "Syllogism", "Rhetoric", "Eloquence", "Sophism", "Allegory", "Metaphor", "Hyperbole", "Oxymoron", "Litotes", "Periphrasis", "Euphemism", "Onomatopoeia", "Pleonasm", "Anagram", "Palindrome", "Acrostic", "Sonnet", "Alexandrine", "Calligram", "Soliloquy", "Monologue", "Tirade", "Quiproquo", "Plot", "Twist", "Denouement", "Prologues", "Epilogue", "Catharsis", "Playwright", "Scenographer", "Choreographer", "Conductor", "Virtuoso", "Patron", "Philanthropist", "Polyglot", "Autodidact", "Scholar", "Visionary", "Precursor"],
             kids: ["Cat", "Dog", "Cow", "Pig", "Lion", "Elephant", "Monkey", "Duck", "Bird", "Fish", "Banana", "Apple", "Cake", "Ice Cream", "Pizza", "Bread", "Milk", "Chocolate", "Strawberry", "Carrot", "Car", "Bicycle", "Train", "Airplane", "Boat", "Rocket", "Fire Truck", "Tractor", "Bus", "Motorcycle", "Bed", "Chair", "Table", "Television", "Toothbrush", "House", "Sun", "Rain", "Snow", "Cloud", "Ball", "Doll", "Book", "Pencil", "Scissors", "Hat", "Shoe", "Coat", "Slide", "Swing", "Giraffe", "Bear", "Rabbit", "Frog", "Turtle", "Butterfly", "Bee", "Dolphin", "Horse", "Sheep", "Lollipop", "Candy", "Orange Juice", "Spoon", "Fork", "Plate", "Glass", "Napkin", "Pajamas", "Sock", "Flower", "Tree", "Moon", "Star", "Sea", "Sand", "Seashell", "Sandcastle", "Snowman", "Gift", "Teddy Bear", "Pacifier", "Baby Bottle", "Paintbrush", "Paint", "Drum", "Trumpet", "Guitar", "Clock", "Mirror", "Soap", "Bathtub", "Comb", "Backpack", "Scooter", "Schoolbag", "Cap", "Glasses", "Ball", "Lego"],
             family: ["Firefighter", "Baker", "Doctor", "Astronaut", "Gardener", "Police Officer", "Chef", "Teacher", "Veterinarian", "Hairdresser", "Supermarket", "Bakery", "Swimming Pool", "Airport", "Cinema", "Library", "Zoo", "Beach", "Museum", "Train Station", "Phone", "Toaster", "Vacuum Cleaner", "Washing Machine", "Umbrella", "Suitcase", "Alarm Clock", "Headphones", "Remote Control", "Fan", "Fear", "Anger", "Joy", "Sleep", "Hunger", "Running", "Dancing", "Gardening", "DIY", "Fishing", "Castle", "Eiffel Tower", "Space Rocket", "Submarine", "Cave", "Mountain", "Desert", "Volcano", "Desert Island", "Forest", "Whistle", "Flashlight", "Magnifying Glass", "Compass", "Water Bottle", "Sleeping Bag", "Tent", "Campfire", "Picnic", "Birthday Cake", "Dentist", "Plumber", "Postman", "Pilot", "Detective", "Architect", "Actor", "Photographer", "Electrician", "Mechanic", "Bus Station", "Fishing Port", "Hospital", "Stadium", "Amusement Park", "Ice Rink", "Farm", "Construction Site", "Post Office", "City Hall", "Microwave", "Hair Dryer", "Lawnmower", "Iron", "Coffee Maker", "Dishwasher", "Printer", "Keyboard", "Scale", "Thermometer", "Fencing", "Climbing", "Archery", "Diving", "Horse Riding", "Skateboarding", "Roller Skating", "Table Tennis", "Badminton", "Yoga"],
             harrypotter: ["Harry Potter", "Ron Weasley", "Hermione Granger", "Albus Dumbledore", "Voldemort", "Severus Snape", "Hagrid", "Sirius Black", "Draco Malfoy", "Dobby", "Neville Longbottom", "Bellatrix Lestrange", "Minerva McGonagall", "Remus Lupin", "Fred Weasley", "George Weasley", "Ginny Weasley", "Lucius Malfoy", "Dolores Umbridge", "Luna Lovegood", "Cedric Diggory", "Peter Pettigrew", "Gellert Grindelwald", "Cho Chang", "Hogwarts", "Platform 9 3/4", "Hogsmeade", "Chamber of Secrets", "Forbidden Forest", "The Leaky Cauldron", "Diagon Alley", "Azkaban", "Elder Wand", "Sorting Hat", "Nimbus 2000", "Marauder's Map", "Time-Turner", "Golden Snitch", "Quaffle", "Bludger", "Invisibility Cloak", "Polyjuice Potion", "Pensieve", "Mirror of Erised", "Philosopher's Stone", "Slytherin's Locket", "Ravenclaw's Diadem", "Hufflepuff's Cup", "Expecto Patronum", "Avada Kedavra", "Wingardium Leviosa", "Lumos", "Alohomora", "Expelliarmus", "Crucio", "Imperio", "Sectumsempra", "Accio", "Hippogriffe", "Sombral", "Basilic", "Aragog", "Phénix", "Loup-garou", "Détraqueur", "Niffleur", "Botruc", "Mangemort", "Gryffondor", "Serpentard", "Serdaigle", "Poufsouffle", "Tournoi des Trois Sorciers", "Bal des Yule", "Armée de Dumbledore", "Ordre du Phénix", "Bière au beurre", "Chocogrenouille", "Dragées Surprises de Bertie Crochue", "Gazette du Sorcier", "Bus Magique", "Robe de sorcier", "Chouette Edwige", "Croûtard", "Pattesmol", "Éclair de Feu", "Encrier", "Parchemin", "Feudeymon", "Sortilège du Fidelius", "Poudre de Cheminette", "Mers de Poudlard", "Saule Cogneur", "Cabane de Hagrid", "Salle sur Demande", "Tour d'Astronomie", "Arithmancie", "Botanique", "Métamorphose"],
@@ -1699,7 +1733,7 @@
             science: ["Solar System", "Sun", "Moon", "Mars", "Jupiter", "Saturne", "Trou Noir", "Voie Lactée", "Galaxie", "Supernova", "Big Bang", "Pesanteur / Gravité", "Oxygène", "Hydrogène", "Atome", "Molécule", "ADN", "Cellule", "Corps Humain", "Cœur", "Cerveau", "Squelette", "Muscle", "Microscope", "Telescope", "Électricité", "Énergie Solaire", "Volcan", "Séisme / Tremblement de terre", "Tsunami", "Tornade", "Dinosaure", "Tyrannosaurus Rex", "Blue Whale", "Lion", "Eagle", "Wolf", "Great White Shark", "Chimpanzee", "Panda", "Biodiversity", "Photosynthesis", "Theory of Relativity", "Vaccine", "Penicillin", "Robotics", "Artificial Intelligence", "Space Rocket", "International Space Station", "Earth", "Venus", "Mercury", "Uranus", "Neptune", "Pluto", "Comet", "Asteroid", "Solar Eclipse", "Atmosphere", "Ozone Layer", "Climate Change", "Nuclear Energy", "Wind Energy", "Neutron", "Proton", "Electron", "Periodic Table", "Carbon", "Nitrogen", "Water H2O", "Gene", "Chromosome", "Bacteria", "Virus", "Immune System", "Lungs", "Stomach", "Liver", "Kidneys", "Skin", "Neuron", "Fossil", "Mammoth", "Marine Biodiversity", "Coral Reef", "Ecosystem", "Symbiosis", "Electromagnetic Wave", "Laser", "Fiber Optics", "3D Printer", "Drone", "Algorithm", "Quantum Physics", "Nanotechnology", "Clone"],
             retro: ["Walkman", "Audio Cassette", "VHS Tape", "3.5-inch Floppy Disk", "Dial Phone", "Tamagotchi", "Game Boy", "Pogs", "Yo-yo", "Rollerblades", "Pins", "Nokia 3310", "MSN Messenger", "CD-ROM", "MP3 Player", "Pokemon Gen 1", "Tetris", "Pac-Man", "Rubik's Cube", "Neon Clothes", "Spice Girls", "Nirvana", "Michael Jackson", "Britney Spears", "Daft Punk", "Furby", "Slinky", "Marbles", "Super Nintendo", "Sega Genesis", "PlayStation 1", "Sega", "Sonic the Hedgehog", "Duck Tales", "Teenage Mutant Ninja Turtles", "Power Rangers", "Payphone", "Phone Card", "Encarta", "Napster", "Kazaa", "eMule", "Yahoo!", "Disposible Camera", "Film Roll", "Slide Projector", "Bubble Tape", "Push Pop", "Bowl Cut", "Tracksuit", "Baggy Jeans", "Buffalo Shoes", "Doc Martens", "Bandana", "Scoubidou", "Macarena", "Charly & Lulu", "Hit Machine", "Furby", "Diabolo", "Slinky", "Bop It", "Game Gear", "Atari", "Arcade Cabinet", "LaserDisc", "PalmPilot", "CRT TV", "Boombox", "Scrunchies", "Platform Shoes", "Jelly Shoes", "Mood Rings", "Slap Bracelets", "Beanie Babies", "Giga Pet", "Skip It", "Lite-Brite", "Polly Pocket", "Action Man", "Barbie & Ken", "G.I. Joe", "Transformers", "He-Man", "Thundercats", "Care Bears", "My Little Pony", "Strawberry Shortcake"],
             cinema: ["Hollywood", "Red Carpet", "Oscars", "Cannes Film Festival", "Movie Director", "Actor / Actress", "Screenplay", "Steven Spielberg", "George Lucas", "Quentin Tarantino", "Christopher Nolan", "Martin Scorsese", "Alfred Hitchcock", "James Cameron", "Leonardo DiCaprio", "Brad Pitt", "Tom Cruise", "Johnny Depp", "Robert De Niro", "Al Pacino", "Meryl Streep", "Scarlett Johansson", "Angelina Jolie", "Titanic", "Avatar", "Star Wars", "Jurassic Park", "Inception", "Pulp Fiction", "The Godfather", "Gladiator", "The Matrix", "Harry Potter", "Lord of the Rings", "Forrest Gump", "Back to the Future", "Indiana Jones", "James Bond 007", "Jaws", "Alien", "Terminator", "Fight Club", "La La Land", "The Avengers", "Clint Eastwood", "Morgan Freeman", "Denzel Washington", "Tom Hanks", "Will Smith", "Keanu Reeves", "Harrison Ford", "Samuel L. Jackson", "Cate Blanchett", "Kate Winslet", "Emma Stone", "Natalie Portman", "Alain Delon", "Gérard Depardieu", "Omar Sy", "Schindler's List", "Braveheart", "Saving Private Ryan", "Interstellar", "Oppenheimer", "Barbie Movie", "The Dark Knight", "Shrek", "Toy Story", "The Lion King", "The Sixth Sense", "The Truman Show", "The Green Mile", "The Silence of the Lambs", "Seven", "The Usual Suspects", "Scarface", "Singin' in the Rain", "Psycho", "Citizen Kane", "Casablanca", "Gone with the Wind", "2001: A Space Odyssey", "A Clockwork Orange", "Taxi Driver", "Apocalypse Now", "Goodfellas", "Die Hard", "Back to the Future Part II", "Ghostbusters", "E.T. the Extra-Terrestrial", "The Shining", "Blade Runner", "Breakfast at Tiffany's"],
-            people: ["YouTuber", "Streamer", "Influencer", "TikTok", "Instagram", "Twitch", "PewDiePie", "MrBeast", "Kim Kardashian", "Kylie Jenner", "Beyoncé", "Rihanna", "Taylor Swift", "Kanye West", "Drake", "Cristiano Ronaldo", "Lionel Messi", "Kylian Mbappé", "LeBron James", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Bill Gates", "Oprah Winfrey", "Dwayne Johnson (The Rock)", "Zendaya", "Timothée Chalamet", "Selena Gomez", "Ariana Grande", "Justin Bieber", "Dua Lipa", "Billie Eilish", "Paparazzi", "Red Carpet", "Met Gala", "Social Media", "David Beckham", "Victoria Beckham", "Paris Hilton", "Khloé Kardashian", "Kourtney Kardashian", "Kendall Jenner", "Travis Scott", "Bad Bunny", "Rosalía", "Post Malone", "Ed Sheeran", "Bruno Mars", "Katy Perry", "Lady Gaga", "Miley Cyrus", "Snoop Dogg", "Eminem", "50 Cent", "Jay-Z", "Will Smith", "Jada Pinkett", "Tom Holland", "Florence Pugh", "Sydney Sweeney", "Margot Robbie", "Ryan Gosling", "Keanu Reeves", "Pedro Pascal", "Bella Hadid", "Gigi Hadid", "Hailey Bieber", "Khaby Lame", "Charli D'Amelio", "Addison Rae", "Pokimane", "Kai Cenat", "IShowSpeed", "Rubius", "Ibai Llanos", "AuronPlay", "GP Explorer", "Kameto", "Gotaga", "ZeratoR", "Domingo", "JUIDefense"],
+            people: ["YouTuber", "Streamer", "Influencer", "TikTok", "Instagram", "Twitch", "Squeezie", "Mcfly & Carlito", "Inoxtag", "Michou", "Lena Situations", "HugoDécrypte", "Amixem", "Norman", "Cyprien", "PewDiePie", "MrBeast", "Kim Kardashian", "Kylie Jenner", "Beyoncé", "Rihanna", "Taylor Swift", "Kanye West", "Drake", "Cristiano Ronaldo", "Lionel Messi", "Kylian Mbappé", "LeBron James", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Bill Gates", "Oprah Winfrey", "Dwayne Johnson (The Rock)", "Zendaya", "Timothée Chalamet", "Selena Gomez", "Ariana Grande", "Justin Bieber", "Dua Lipa", "Billie Eilish", "Paparazzi", "Red Carpet", "Met Gala", "Social Media", "David Beckham", "Victoria Beckham", "Paris Hilton", "Khloé Kardashian", "Kourtney Kardashian", "Kendall Jenner", "Travis Scott", "Bad Bunny", "Rosalía", "Post Malone", "Ed Sheeran", "Bruno Mars", "Katy Perry", "Lady Gaga", "Miley Cyrus", "Snoop Dogg", "Eminem", "50 Cent", "Jay-Z", "Will Smith", "Jada Pinkett", "Tom Holland", "Florence Pugh", "Sydney Sweeney", "Margot Robbie", "Ryan Gosling", "Keanu Reeves", "Pedro Pascal", "Bella Hadid", "Gigi Hadid", "Hailey Bieber", "Khaby Lame", "Charli D'Amelio", "Addison Rae", "Pokimane", "Kai Cenat", "IShowSpeed", "Rubius", "Ibai Llanos", "AuronPlay", "GP Explorer", "Kameto", "Gotaga", "ZeratoR", "Domingo", "JUIDefense"],
             fashion: ["Chanel", "Louis Vuitton", "Gucci", "Dior", "Prada", "Hermès", "Versace", "Balenciaga", "Yves Saint Laurent", "Burberry", "Nike", "Adidas", "Puma", "Reebok", "New Balance", "Jordan (Sneakers)", "Converse", "Vans", "Air Force 1", "Stan Smith", "Zara", "H&M", "Uniqlo", "Levi's", "Calvin Klein", "Tommy Hilfiger", "Lacoste", "Supreme", "Off-White", "Vogue", "Fashion Week", "Catwalk", "Supermodel", "Haute Couture", "Handbag", "High Heels", "Cult Sneakers", "Ray-Ban", "Rolex", "Cartier", "Tiffany & Co.", "Streetwear", "Givenchy", "Fendi", "Valentino", "Armani", "Dolce & Gabbana", "Bottega Veneta", "Alexander McQueen", "Moncler", "Jacquemus", "Jean Paul Gaultier", "Kenzo", "Stella McCartney", "Moschino", "Isabel Marant", "Karl Lagerfeld", "Coco Chanel", "Christian Dior", "Gianni Versace", "Virgil Abloh", "Anna Wintour", "Naomi Campbell", "Kate Moss", "Gisele Bündchen", "Cara Delevingne", "Bella Hadid", "Trench-Coat", "Smoking", "Petite Robe Noire", "T-Shirt Blanc", "Blouson en Cuir", "Casquette NY", "Chapeau Fedora", "Ceinture à Boucle", "Bijoux en Or", "Montre de Luxe", "Parfum Culte", "Maquillage", "Rouge à Lèvres", "Vernis à Ongles", "Robe de Mariée", "Noeuds Papillon", "Cravate en Soie", "Boina", "Tacones Louboutin", "Suela Roja", "Bolso Birkin", "Bolso 2.55", "Gafas de Sol Grandes"],
             travel: ["France", "Italie", "Japon", "États-Unis", "Brésil", "Australie", "Égypte", "Canada", "Mexique", "Chine", "Inde", "Espagne", "Grèce", "Thaïlande", "Maroc", "Pérou", "Islande", "Norvège", "Afrique du Sud", "Argentine", "Paris", "Tokyo", "New York", "Rome", "Londres", "Rio de Janeiro", "Sydney", "Le Caire", "Pékin", "Bangkok", "Tour Eiffel", "Statue de la Liberté", "Grande Muraille de Chine", "Pyramides de Gizeh", "Colisée", "Taj Mahal", "Machu Picchu", "Christ Rédempteur", "Pétra", "Acropole d'Athènes", "Passeport", "Valise", "Boussole", "Carte du monde", "Avion", "Sac à dos", "Décalage horaire", "Souvenir", "Billet d'avion", "Appareil photo", "Bateau de croisière", "Hôtel", "Auberge de jeunesse", "Guide touristique", "Escale", "Douane", "Visa", "Monnaie étrangère", "Crème solaire", "Lunettes de soleil", "Gondole de Venise", "Safari", "Aurore boréale", "Plongée sous-marine", "Randonnée en montagne", "Volcano", "Plage de sable blanc", "Désert du Sahara", "Jungle amazonienne", "Fjord", "Allemagne", "Portugal", "Pays-Bas", "Suisse", "Suède", "Chili", "Colombie", "Vietnam", "Indonésie", "Nouvelle-Zélande", "Dubaï", "Istanbul", "Barcelone", "Venise", "Amsterdam", "Los Angeles", "Las Vegas", "San Francisco", "Montréal", "Kyoto", "Big Ben", "Mont Fuji", "Grand Canyon", "Chutes du Niagara", "Mont Everest", "Opéra de Sydney", "Burj Khalifa", "Sagrada Familia", "Mont Saint-Michel"],
             food: ["Pizza", "Burger", "Sushi", "Pâtes Carbonara", "Paëlla", "Tacos", "Couscous", "Fondue Savoyarde", "Raclette", "Crêpe", "Croissant", "Baguette", "Macaron", "Gaufre", "Tiramisu", "Eclair au chocolat", "Tartiflette", "Boeuf Bourguignon", "Cassoulet", "Quiche Lorraine", "Fromage", "Chocolat", "Huile d'olive", "Ail", "Épices", "Piment", "Avocat", "Saumon", "Truffe", "Basilic", "Baguettes chinoises", "Poêle", "Four", "Casserole", "Chef cuisinier", "Menu", "Recette", "Tablier", "Fouet", "Rouleau à pâtisserie", "Guacamole", "Hummus", "Dim Sum", "Ramen", "Pad Thaï", "Kebab", "Fish and Chips", "Nems", "Falafel", "Curry", "Camembert", "Roquefort", "Mozzarella", "Parmesan", "Cheddar", "Gorgonzola", "Brie", "Reblochon", "Feta", "Emmental", "Profiteroles", "Crème brûlée", "Tarte Tatin", "Mousse au chocolat", "Mille-feuille", "Paris-Brest", "Panna Cotta", "Cheesecake", "Churros", "Donut", "Vin rouge", "Champagne", "Café Espresso", "Thé vert", "Jus de fruits", "Cocktail", "Limonade", "Cidre", "Bière", "Eau gazeuse", "Couteau de chef", "Planche à découper", "Spatule", "Tire-bouchon", "Décapsuleur", "Salière", "Poivrier", "Balance de cuisine", "Mixeur", "Cocotte-minute", "Saucisson", "Jambon de Bayonne", "Foie gras", "Huîtres", "Caviar", "Homard", "Crevettes", "Moules frites", "Escargots", "Soupe à l'oignon"],
@@ -1723,7 +1757,7 @@
             dc: ["Batman", "Bruce Wayne", "Superman", "Clark Kent", "Wonder Woman", "Flash", "Aquaman", "Cyborg", "Green Lantern", "Martian Manhunter", "Shazam", "Green Arrow", "Nightwing", "Batgirl", "Robin", "Supergirl", "Joker", "Harley Quinn", "Bane", "Catwoman", "Pingüino", "Riddler", "Dos Caras", "Hiedra Venenosa", "Mr. Freeze", "Espantapájaros", "Ra's al Ghul", "Deathstroke", "Darkseid", "Lex Luthor", "General Zod", "Brainiac", "Doomsday", "Black Adam", "Sinestro", "Reverse-Flash", "Gotham City", "Metrópolis", "Asilo Arkham", "Batcueva", "Batmóvil", "Bat-Señal", "Batarang", "Lazo de la Verdad", "Kryptonita", "Daily Planet", "Liga de la Justicia", "Escuadrón Suicida", "Teen Titans", "Watchmen", "Dr. Manhattan", "Rorschach", "V de Vendetta", "Constantine", "Peacemaker", "Alfred Pennyworth", "Comisario Gordon", "Lois Lane", "El Caballero Oscuro", "Hawkman", "Hawkgirl", "Atom", "Firestorm", "Doctor Fate", "Zatanna", "Superboy", "Red Hood", "Damian Wayne", "Batwoman", "Solomon Grundy", "Killer Croc", "Clayface", "Man-Bat", "Deadshot", "King Shark", "Polka-Dot Man", "Starfire", "Raven", "Chico Bestia", "Canario Negro", "Cazadora", "Vixen", "Star Sapphire", "Gorilla Grodd", "Metallo", "Parásito", "Amanda Waller", "Lucius Fox", "Martha Wayne", "Thomas Wayne", "Vandal Savage", "Universo DC", "Central City", "Temiscira"],
             history: ["Napoleón Bonaparte", "Cleopatra", "Julio César", "Alejandro Magno", "Juana de Arco", "Luis XIV", "María Antonieta", "Carlomagno", "Leonardo da Vinci", "Albert Einstein", "Isaac Newton", "Galileo", "Cristóbal Colón", "Marco Polo", "Abraham Lincoln", "George Washington", "Winston Churchill", "Charles de Gaulle", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King", "Rosa Parks", "Gengis Kan", "Atila el Huno", "Tutankamón", "Revolución Francesa", "Edad Media", "Renacimiento", "Imperio Romano", "Antiguo Egipto", "Segunda Guerra Mundial", "Guerra Fría", "Caída del Muro de Berlín", "Carrera Espacial", "Declaración de Independencia", "Pirámides", "Palacio de Versalles", "Gladiador", "Caballero", "Samurái", "Faraón", "Emperador", "Llegada a la Luna", "Abolición de la Esclavitud", "Tratado de Versalles", "Batalla de Waterloo", "Marie Curie", "Louis Pasteur", "Charles Darwin", "Aristóteles", "Platón", "Sócrates", "Arquímedes", "Espartaco", "Reina Victoria", "Thomas Edison", "Nikola Tesla", "Hermanos Wright", "Gutenberg", "Revolución Industrial", "Muro de Berlín", "Guerra Civil Americana", "Primera Guerra Mundial", "Época Vikinga", "Imperio Otomano", "Imperio Bizantino", "Edad de Piedra", "Edad de Bronce", "Edad de Hierro", "Carta Magna", "Ley Seca", "Gran Depresión", "Años Veinte", "Movimiento Sufragista", "Mayflower", "Pearl Harbor", "Hiroshima", "Día D", "Watergate", "Desastre del Challenger", "Desastre de Chernóbil", "Ruta de la Seda", "Peste Negra", "Las Cruzadas", "Inquisición Española", "Resistencia Francesa"],
             geo: ["París", "Londres", "Tokio", "Nueva York", "Roma", "Washington D.C.", "Pekín", "Canberra", "Brasilia", "Ottawa", "Madrid", "Berlín", "Atenas", "El Cairo", "Buenos Aires", "Bangkok", "Venecia", "Sídney", "Capitolio", "Torre Eiffel", "Estatua de la Libertad", "Gran Muralla China", "Pirámides de Giza", "Coliseo de Roma", "Taj Mahal", "Machu Picchu", "Petra", "Cristo Redentor", "Big Ben", "Monte Fuji", "Gran Cañón", "Cataratas del Niágara", "Monte Everest", "Burj Khalifa", "Sagrada Familia", "Río Amazonas", "Río Nilo", "Océano Pacífico", "Océano Atlántico", "Desierto del Sahara", "Selva Amazónica", "Polo Norte", "Antártida", "Aurora Boreal", "Los Alpes", "Himalaya", "Islandia", "Groenlandia", "Madagascar", "Australia", "Nueva Zelanda", "Hawái", "Mont Blanc", "Kilimanjaro", "Monte McKinley", "Lago Baikal", "Mar Rojo", "Mar Negro", "Canal de Panamá", "Canal de Suez", "Estrecho de Gibraltar", "San Francisco", "Los Ángeles", "Las Vegas", "Río de Janeiro", "Moscú", "Estambul", "Dubái", "Seúl", "Singapur", "Hong Kong", "Bombay", "Copenhague", "Estocolmo", "Ámsterdam", "Viena", "Lisboa", "Dublín", "Bruselas", "Reikiavik", "Polo Sur", "Línea del Ecuador", "Trópico de Cáncer", "Cabo de Buena Esperanza", "Everest", "Fosa de las Marianas", "Isla de Pascua", "Islas Galápagos", "Triángulo de las Bermudas", "Ciudad del Vaticano", "Mónaco", "Gran Canal", "Lago Ness", "Cataratas Victoria", "Parque Yellowstone", "Yosemite", "Monte Rushmore", "Stonehenge", "Acrópolis", "Mar Muerto"],
-            science: ["Sistema Solar", "Sol", "Luna", "Marte", "Júpiter", "Saturno", "Agujero Negro", "Vía Láctea", "Galaxia", "Supernova", "Big Bang", "Gravedad", "Oxígeno", "Hidrógeno", "Átomo", "Molécula", "ADN", "Célula", "Cuerpo Humano", "Corazón", "Cerebro", "Esqueleto", "Músculo", "Microscopio", "Telescopio", "Electricidad", "Energía Solar", "Volcán", "Terremoto", "Tsunami", "Tornado", "Dinosaurio", "Tiranosaurio Rex", "Ballena Azul", "León", "Águila", "Lobo", "Tiburón Blanco", "Chimpancé", "Panda", "Biodiversidad", "Fotosíntesis", "Teoría de la Relatividad", "Vacuna", "Penicilina", "Robótica", "Inteligencia Artificial", "Cohete Espacial", "Estación Espacial Internacional", "Tierra", "Venus", "Mercurio", "Urano", "Neptuno", "Plutón", "Cometa", "Asteroide", "Eclipse Solar", "Atmósfera", "Capa de Ozono", "Cambio Climático", "Energía Nuclear", "Energía Eólica", "Neutrón", "Protón", "Electrón", "Tabla Periódica", "Carbono", "Nitrógeno", "Agua H2O", "Gen", "Cromosoma", "Bacteria", "Virus", "Sistema Inmunitario", "Pulmones", "Estómago", "Hígado", "Riñones", "Piel", "Neurona", "Fósil", "Mamut", "Biodiversidad Marina", "Arrecife de Coral", "Ecosistema", "Simbiosis", "Onda Electromagnética", "Láser", "Fibra Óptica", "Impresora 3D", "Dron", "Algorithmo", "Física Cuántica", "Nanotecnología", "Clon"],
+            science: ["Sistema Solar", "Sol", "Luna", "Marte", "Júpiter", "Saturno", "Agujero Negro", "Vía Láctea", "Galaxia", "Supernova", "Big Bang", "Gravedad", "Oxígeno", "Hidrógeno", "Átomo", "Molécula", "ADN", "Célula", "Cuerpo Humano", "Corazón", "Cerebro", "Esqueleto", "Músculo", "Microscopio", "Telescopio", "Electricidad", "Energía Solar", "Volcán", "Terremoto", "Tsunami", "Tornado", "Dinosaurio", "Tiranosaurio Rex", "Ballena Azul", "León", "Águila", "Lobo", "Tiburón Blanco", "Chimpancé", "Panda", "Biodiversidad", "Fotosíntesis", "Teoría de la Relatividad", "Vacuna", "Penicilina", "Robótica", "Inteligencia Artificial", "Cohete Espacial", "Estación Espacial Internacional", "Tierra", "Venus", "Mercurio", "Urano", "Neptuno", "Plutón", "Cometa", "Asteroide", "Eclipse Solar", "Atmósfera", "Capa de Ozono", "Cambio Climático", "Energía Nuclear", "Energía Eólica", "Neutrón", "Protón", "Electrón", "Tabla Periódica", "Carbono", "Nitrógeno", "Agua H2O", "Gen", "Cromosoma", "Bacteria", "Virus", "Sistema Inmunitario", "Pulmones", "Estómago", "Hígado", "Riñones", "Piel", "Neurona", "Fósil", "Mamut", "Biodiversidad Marina", "Arrecife de Coral", "Ecosistema", "Simbiosis", "Onda Electromagnética", "Láser", "Fibra Óptica", "Impresora 3D", "Dron", "Algoritmo", "Física Cuántica", "Nanotecnología", "Clon"],
             retro: ["Walkman", "Cinta de Casete", "Cinta VHS", "Disquete 3.5", "Teléfono de Disco", "Tamagotchi", "Game Boy", "Pogs", "Yoyó", "Patines en Línea", "Chapas / Pins", "Nokia 3310", "MSN Messenger", "CD-ROM", "Reproductor MP3", "Pokemon Gen 1", "Tetris", "Pac-Man", "Cubo de Rubik", "Ropa Neón", "Spice Girls", "Nirvana", "Michael Jackson", "Britney Spears", "Daft Punk", "Furby", "Muelle Slinky", "Canicas", "Super Nintendo", "Sega Mega Drive", "PlayStation 1", "Sega", "Sonic el Erizo", "Patoaventuras", "Tortugas Ninja", "Power Rangers", "Cabina Telefónica", "Tarjeta Telefónica", "Encarta", "Napster", "Kazaa", "eMule", "Yahoo!", "Cámara Desechable", "Carrete de Fotos", "Proyector de Diapositivas", "Cinta de Chicle", "Push Pop", "Corte de Pelo al Tazón", "Chándal de Tono Brillantina", "Pantalones Anchos Baggy", "Zapatillas Buffalo", "Botas Doc Martens", "Bandana", "Scoubidou", "La Macarena", "Radio Casete Boombox", "Coleteros Scrunchie", "Zapatos de Plataforma", "Pulseras Bofetada Slap", "Muñecos Beanie Babies", "Mascota Virtual Giga Pet", "Skip It", "Lite-Brite", "Polly Pocket", "Action Man", "Barbie & Ken", "G.I. Joe", "Transformers", "He-Man", "Thundercats", "Osos Amorosos", "Mi Pequeño Pony", "Tarta de Fresa"],
             cinema: ["Hollywood", "Alfombra Roja", "Premios Oscar", "Festival de Cannes", "Director de Cine", "Actor / Actriz", "Guion", "Steven Spielberg", "George Lucas", "Quentin Tarantino", "Christopher Nolan", "Martin Scorsese", "Alfred Hitchcock", "James Cameron", "Leonardo DiCaprio", "Brad Pitt", "Tom Cruise", "Johnny Depp", "Robert De Niro", "Al Pacino", "Meryl Streep", "Scarlett Johansson", "Angelina Jolie", "La Lista de Schindler", "Braveheart", "Salvar al Soldado Ryan", "Interstellar", "Oppenheimer", "Barbie (Película)", "El Caballero Oscuro", "Shrek", "Toy Story", "El Rey León", "El Sexto Sentido", "El Show de Truman", "La Milla Verde", "El Silencio de los Corderos", "Seven", "Sospechosos Habituales", "Scarface", "Cantando bajo la Lluvia", "Psicosis", "Ciudadano Kane", "Casablanca", "Lo que el Viento se Llevó", "2001: Una Odisea del Espacio", "La Naranja Mecánica", "Taxi Driver", "Apocalypse Now", "Uno de los Nuestros", "La Jungla de Cristal", "Regreso al Futuro II", "Cazafantasmas", "E.T. el Extraterrestre", "El Resplandor", "Blade Runner", "Desayuno con Diamantes"],
             people: ["YouTuber", "Streamer", "Influencer", "TikTok", "Instagram", "Twitch", "PewDiePie", "MrBeast", "Kim Kardashian", "Kylie Jenner", "Beyoncé", "Rihanna", "Taylor Swift", "Kanye West", "Drake", "Cristiano Ronaldo", "Lionel Messi", "Kylian Mbappé", "LeBron James", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Bill Gates", "Oprah Winfrey", "Dwayne Johnson", "Zendaya", "Timothée Chalamet", "Selena Gomez", "Ariana Grande", "Justin Bieber", "Dua Lipa", "Billie Eilish", "Paparazzi", "Alfombra Roja", "Met Gala", "Redes Sociales", "Gérard Piqué", "Shakira", "David Beckham", "Victoria Beckham", "Paris Hilton", "Khloé Kardashian", "Kourtney Kardashian", "Kendall Jenner", "Travis Scott", "Bad Bunny", "Rosalía", "Post Malone", "Ed Sheeran", "Bruno Mars", "Katy Perry", "Lady Gaga", "Miley Cyrus", "Snoop Dogg", "Eminem", "50 Cent", "Jay-Z", "Will Smith", "Jada Pinkett", "Tom Holland", "Florence Pugh", "Sydney Sweeney", "Margot Robbie", "Ryan Gosling", "Keanu Reeves", "Pedro Pascal", "Bella Hadid", "Gigi Hadid", "Hailey Bieber", "Khaby Lame", "Charli D'Amelio", "Addison Rae", "Pokimane", "Kai Cenat", "IShowSpeed", "Rubius", "Ibai Llanos", "AuronPlay"],
@@ -1731,7 +1765,7 @@
             travel: ["Francia", "Italia", "Japón", "Estados Unidos", "Brasil", "Australia", "Egipto", "Canadá", "México", "China", "India", "España", "Grecia", "Tailandia", "Marruecos", "Perú", "Islandia", "Noruega", "Sudáfrica", "Argentina", "París", "Tokio", "Nueva York", "Roma", "Londres", "Río de Janeiro", "Sídney", "El Cairo", "Pekín", "Bangkok", "Torre Eiffel", "Estatua de la Libertad", "Gran Muralla China", "Pirámides de Giza", "Coliseo", "Taj Mahal", "Machu Picchu", "Petra", "Cristo Redentor", "Pasaporte", "Maleta", "Brújula", "Mapa del mundo", "Avión", "Mochila", "Diferencia horaria", "Recuerdo", "Billete de avión", "Cámara de fotos", "Crucero", "Hotel", "Albergue", "Guía turística", "Escala", "Aduana", "Visado", "Moneda extranjera", "Crema solar", "Gafas de sol", "Góndola de Venecia", "Safari", "Aurora boreal", "Submarinismo", "Senderismo", "Volcán", "Playa de arena blanca", "Desierto del Sahara", "Selva amazónica", "Fordo", "Alemania", "Portugal", "Países Bajos", "Suiza", "Suecia", "Chile", "Colombia", "Vietnam", "Indonesia", "Nueva Zelanda", "Dubái", "Estambul", "Barcelona", "Venecia", "Ámsterdam", "Los Ángeles", "Las Vegas", "San Francisco", "Montreal", "Kioto", "Big Ben", "Monte Fuji", "Gran Cañón", "Cataratas del Niágara", "Monte Everest", "Ópera de Sídney", "Burj Khalifa", "Sagrada Familia", "Monte Saint-Michel"],
             food: ["Pizza", "Hamburguesa", "Sushi", "Pasta Carbonara", "Paella", "Tacos", "Cuscús", "Fondue", "Raclette", "Crepe", "Cruasán", "Barra de pan", "Macaron", "Gofre", "Tiramisú", "Pepinillo", "Tortilla de patatas", "Guiso de carne", "Empanada", "Quiche", "Queso", "Chocolate", "Aceite de oliva", "Ajo", "Especias", "Picante", "Aguacate", "Salmón", "Trufa", "Albahaca", "Palillos chinos", "Sartén", "Horno", "Cazuela", "Chef", "Menú", "Receta", "Delantal", "Varilla", "Rodillo de cocina", "Guacamole", "Hummus", "Dim Sum", "Ramen", "Pad Thai", "Kebab", "Fish and Chips", "Rollitos de primavera", "Falafel", "Curry", "Camembert", "Roquefort", "Mozzarella", "Parmesano", "Cheddar", "Gorgonzola", "Feta", "Emmental", "Profiteroles", "Tarta Tatin", "Mousse de chocolate", "Milhojas", "Panna Cotta", "Tarta de queso", "Churros", "Donut", "Vino tinto", "Champán", "Café solo", "Té verde", "Zumo de frutas", "Cóctel", "Limonada", "Sidra", "Cerveza", "Agua con gas", "Cuchillo de chef", "Tabla de cortar", "Espátula", "Sacacorchos", "Abridor", "Salero", "Pimentero", "Báscula de cocina", "Batidora", "Olla exprés", "Salchichón", "Jamón ibérico", "Foie gras", "Ostras", "Caviar", "Langosta", "Gambas", "Mejillones con patatas", "Caracoles", "Sopa de cebolla"],
             music: ["Guitarra", "Piano", "Batería", "Violín", "Trompeta", "Micrófono", "Auriculares", "Saxofón", "Flauta", "Bajo", "Rock", "Pop", "Rap", "Jazz", "Música Clásica", "Electro", "Reggae", "Heavy Metal", "Blues", "Funk", "Michael Jackson", "Beyoncé", "Freddie Mercury", "Celine Dion", "Eminem", "Daft Punk", "Mozart", "Beethoven", "The Beatles", "Elvis Presley", "Concierto", "Festival", "Estribillo", "Coreografía", "Disco de oro", "Estudio de grabación", "Partitura", "Solfeo", "Director de orquesta", "Musical", "Amplificador", "Tocadiscos", "Altavoz Bluetooth", "Sintetizador", "Arpa", "Ukelele", "Acordeón", "Pandereta", "Xilófono", "Triángulo", "Bob Marley", "David Bowie", "Madonna", "Rihanna", "Lady Gaga", "Coldplay", "Queen", "Rolling Stones", "AC/DC", "Nirvana", "Alejandro Sanz", "Rosalía", "Stromae", "Bad Bunny", "Aitana", "C. Tangana", "Soprano", "Shakira", "Jul", "Acoustic", "Playback", "DJ", "Coro", "Ópera", "Sinfonía", "Balada", "Solo de guitarra", "Beatbox", "Auto-Tune", "Acróbata", "Camerino", "Entrada de concierto", "Gira mundial", "Videoclip", "Banda sonora", "Himno", "Rhythm and blues", "Country", "Ska", "Batería electrónica", "Pedal de efectos", "Metrónomo", "Diapasón", "Cuerdas de guitarra", "Baquetas", "Atril", "Mesa de mezclas"],
-            sports: ["Fútbol", "Baloncesto", "Tenis", "Natación", "Rugby", "Judo", "Atletismo", "Ciclismo", "Fórmula 1", "Boxeo", "Golf", "Gimnasia", "Balonmano", "Voleibol", "Esquí alpino", "Snowboard", "Surf", "Skateboarding", "Equitación", "Esgrima", "Balón", "Raqueta", "Piscina", "Estadio", "Camiseta", "Medalla de oro", "Silbato", "Cronómetro", "Ring", "Court de tennis", "Kylian Mbappé", "LeBron James", "Rafael Nadal", "Usain Bolt", "Teddy Riner", "Serena Williams", "Cristiano Ronaldo", "Lionel Messi", "Michael Jordan", "Roger Federer", "Juegos Olímpicos", "Copa del Mundo", "Grand Slam", "Tarjeta roja", "Tirada de penalti", "Maratón", "Tour de Francia", "Super Bowl", "NBA Finals", "Gran Premio F1", "Tacos de bota", "Guantes de boxeo", "Casco de bici", "Protector bucal", "Kimono", "Traje de neopreno", "Bastones de esquí", "Tabla de surf", "Aletas", "Putter", "Árbitro", "Entrenador", "Aficionado", "Podio", "Himno nacional", "Trofeo", "Prórroga", "Descanso", "Penalti", "Fuera de juego", "Antoine Griezmann", "Zinedine Zidane", "Novak Djokovic", "Lewis Hamilton", "Stephen Curry", "Tyson Fury", "Conor McGregor", "Simone Biles", "Katie Ledecky", "Clarisse Agbegnenou", "Escalade", "Tiro con arco", "Bádminton", "Tenis de mesa", "Remo", "Piragüismo", "Waterpolo", "Baseball", "Fútbol americano", "Hockey sobre hielo", "Línea de meta", "Salida nula", "Record mundial", "Dopaje", "Espíritu deportivo", "Fair-play", "Suplente", "Capitaine", "Vestuario", "Patrocinador"]
+            sports: ["Fútbol", "Baloncesto", "Tenis", "Natación", "Rugby", "Judo", "Atletismo", "Ciclismo", "Fórmula 1", "Boxeo", "Golf", "Gimnasia", "Balonmano", "Voleibol", "Esquí alpino", "Snowboard", "Surf", "Skateboarding", "Equitación", "Esgrima", "Balón", "Raqueta", "Piscina", "Estadio", "Camiseta", "Medalla de oro", "Silbato", "Cronómetro", "Ring", "Pista de tenis", "Kylian Mbappé", "LeBron James", "Rafael Nadal", "Usain Bolt", "Teddy Riner", "Serena Williams", "Cristiano Ronaldo", "Lionel Messi", "Michael Jordan", "Roger Federer", "Juegos Olímpicos", "Copa del Mundo", "Grand Slam", "Tarjeta roja", "Tirada de penalti", "Maratón", "Tour de Francia", "Super Bowl", "NBA Finals", "Gran Premio F1", "Tacos de bota", "Guantes de boxeo", "Casco de bici", "Protector bucal", "Kimono", "Traje de neopreno", "Bastones de esquí", "Tabla de surf", "Aletas", "Putter", "Árbitro", "Entrenador", "Aficionado", "Podio", "Himno nacional", "Trofeo", "Prórroga", "Descanso", "Penalti", "Fuera de juego", "Antoine Griezmann", "Zinedine Zidane", "Novak Djokovic", "Lewis Hamilton", "Stephen Curry", "Tyson Fury", "Conor McGregor", "Simone Biles", "Katie Ledecky", "Clarisse Agbegnenou", "Escalade", "Tiro con arco", "Bádminton", "Tenis de mesa", "Remo", "Piragüismo", "Waterpolo", "Baseball", "Football americano", "Hockey sobre hielo", "Línea de meta", "Salida nula", "Record mundial", "Dopaje", "Espíritu deportivo", "Fair-play", "Suplente", "Capitaine", "Vestuario", "Patrocinador"]
         }
     };
 
@@ -1762,30 +1796,32 @@
     let passesPerWordInRound = {};
 
     let deferredPrompt = null;
-    // Détection iOS (Safari / WebKit)
+    
+    // Détection iOS avancée (ex: Safari iPhone/iPad)
     const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
 
     // GESTIONNAIRE PWA MULTI-PLATEFORME (ANDROID / IOS / DESKTOP)
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
         const installBtn = document.getElementById('pwa-install-btn');
-        if (installBtn) installBtn.style.display = 'inline-block';
+        if (installBtn && !isStandalone) installBtn.style.display = 'inline-block';
     });
 
     function checkPwaDisplay() {
         const installBtn = document.getElementById('pwa-install-btn');
-        // Sur iOS Safari, la PWA ne déclenche pas 'beforeinstallprompt', on force l'affichage du bouton.
-        if (isIos && installBtn) {
+        if (!installBtn) return;
+        
+        if (isStandalone) {
+            installBtn.style.display = 'none';
+        } else {
             installBtn.style.display = 'inline-block';
         }
     }
 
     function triggerPwaInstall() {
-        if (isIos) {
-            const modal = document.getElementById('ios-install-modal');
-            if (modal) modal.classList.add('active');
-        } else if (deferredPrompt) {
+        if (deferredPrompt) {
             deferredPrompt.prompt();
             deferredPrompt.userChoice.then((choiceResult) => {
                 if (choiceResult.outcome === 'accepted') {
@@ -1795,7 +1831,6 @@
                 deferredPrompt = null;
             });
         } else {
-            // Fallback pour tout autre navigateur mobile sans API directe
             const modal = document.getElementById('ios-install-modal');
             if (modal) modal.classList.add('active');
         }
@@ -1984,10 +2019,13 @@
         document.getElementById('start-turn-btn').innerText = t.btnStartChrono;
         document.getElementById('ui-btn-skip').innerText = t.btnSkip;
         document.getElementById('ui-btn-found').innerText = t.btnFound;
-        document.getElementById('pwa-install-btn').innerText = t.btnInstallPwa || "📲 Installer l'application";
-        document.getElementById('ios-modal-title').innerText = t.iosTitle || "Installer sur iPhone / iPad";
-        document.getElementById('ios-step1').innerHTML = t.iosStep1 || "1. Appuyez sur le bouton <strong>Partager ⎋</strong> en bas de votre navigateur Safari.";
-        document.getElementById('ios-step2').innerHTML = t.iosStep2 || "2. Défilez vers le bas et sélectionnez <strong>Sur l'écran d'accueil ⊕</strong>.";
+        document.getElementById('pwa-install-btn').innerText = t.btnInstallPwa || "📲 Install Application";
+        document.getElementById('donate-btn').innerText = t.btnDonate || "❤️ Support the developer";
+        
+        document.getElementById('ios-modal-title').innerText = t.iosTitle || "Install on iPhone / iPad";
+        document.getElementById('ios-step1').innerHTML = t.iosStep1 || "1. Tap the <strong>Share ⎋</strong> button at the bottom of Safari.";
+        document.getElementById('ios-step2').innerHTML = t.iosStep2 || "2. Scroll down and select <strong>Add to Home Screen ⊕</strong>.";
+        document.getElementById('ios-modal-close-btn').innerText = t.iosGotIt || "Got it!";
 
         document.getElementById('ui-turn-label').innerText = t.turn;
         document.getElementById('ui-active-player-label').innerText = t.activePlayerLabel;
@@ -2666,4 +2704,3 @@
 
 </body>
 </html>
-
