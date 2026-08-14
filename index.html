@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rush'Up! Game v1.03.38</title>
+    <title>Rush'Up! Game v1.03.39</title>
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
@@ -287,6 +287,11 @@
             box-shadow: none !important;
         }
 
+        .btn-primary {
+            background: var(--primary);
+            box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+        }
+
         .btn-success {
             background: var(--success);
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
@@ -377,6 +382,19 @@
             font-weight: 700;
             font-size: 0.95rem;
             margin-top: 4px;
+        }
+
+        /* Badge bleu pour indiquer l'équipe/joueur qui démarre la manche */
+        .start-player-blue-badge {
+            background: rgba(112, 161, 255, 0.15);
+            color: #70a1ff;
+            border: 1px solid rgba(112, 161, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 1.05rem;
+            margin-top: 6px;
+            display: inline-block;
         }
 
         .timer {
@@ -767,7 +785,7 @@
             <!-- Rempli dynamiquement en JS -->
         </div>
 
-        <button class="btn btn-warning" id="rules-close-btn" onclick="closeRulesModal()">Close</button>
+        <button class="btn btn-primary" id="rules-close-btn" onclick="closeRulesModal()">Close</button>
     </div>
 </div>
 
@@ -775,6 +793,7 @@
     <div class="brand-header">
         <h1 class="app-title">Rush'Up!</h1>
         <div class="header-actions">
+            <!-- Boutons Visibles dès l'accueil et configurés en anglais par défaut -->
             <button class="sound-toggle-btn" id="sound-btn" onclick="toggleSound()">🔊 Sound</button>
             <button class="rules-toggle-btn" id="rules-btn" onclick="openRulesModal()">📜 Rules</button>
         </div>
@@ -879,7 +898,7 @@
             </div>
         </div>
 
-        <button class="btn" id="ui-btn-start" onclick="startGame()">⚡ Lancer la partie</button>
+        <button class="btn btn-primary" id="ui-btn-start" onclick="startGame()">⚡ Lancer la partie</button>
     </div>
 
     <!-- Écran d'explication des règles avant chaque manche -->
@@ -898,10 +917,11 @@
 
         <div style="background: rgba(15, 23, 42, 0.5); padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--card-border); text-align: center;">
             <span id="ui-first-player-label" style="font-size: 0.85rem; color: var(--text-muted);">C'est à cette équipe/joueur de commencer :</span>
-            <div class="player-turn-badge" id="intro-start-player-name" style="font-size: 1.1rem; margin-top: 6px;">Équipe 1</div>
+            <div class="start-player-blue-badge" id="intro-start-player-name">Équipe 1</div>
         </div>
 
-        <button class="btn btn-success" id="ui-btn-start-round" onclick="startRoundGame()">🚀 Démarrer la manche</button>
+        <!-- Bouton Démarrer la manche en Rouge -->
+        <button class="btn btn-primary" id="ui-btn-start-round" onclick="startRoundGame()">🚀 Démarrer la manche</button>
     </div>
 
     <!-- Écran de jeu -->
@@ -929,12 +949,14 @@
         <div class="round-badge" id="round-display">Manche 1 : Description libre</div>
 
         <div id="card-area">
-            <button class="btn btn-warning" id="start-turn-btn" onclick="startTurn()">▶️ Démarrer le chrono</button>
+            <!-- Bouton Démarrer le chrono en Rouge -->
+            <button class="btn btn-primary" id="start-turn-btn" onclick="startTurn()">▶️ Démarrer le chrono</button>
             <div class="word-box" id="word-display" style="display: none;">—</div>
         </div>
 
         <div class="btn-group" id="action-btns" style="display: none;">
-            <button class="btn btn-warning" id="ui-btn-skip" onclick="skipWord()">↩️ Passer</button>
+            <!-- Bouton Passer en Rouge -->
+            <button class="btn btn-primary" id="ui-btn-skip" onclick="skipWord()">↩️ Passer</button>
             <button class="btn btn-success" id="ui-btn-found" onclick="validateWord()">✅ Trouvé !</button>
         </div>
     </div>
@@ -960,11 +982,11 @@
 
         <div id="trophies-container" class="trophy-container" style="display: none;"></div>
 
-        <button class="btn" id="next-round-btn" onclick="nextRound()">Manche suivante ➡️</button>
+        <button class="btn btn-primary" id="next-round-btn" onclick="nextRound()">Manche suivante ➡️</button>
     </div>
 
     <div class="version-footer">
-        <div>Version 1.03.38 Ultimate Edition by Arnaud Arnaud</div>
+        <div>Version 1.03.39 Ultimate Edition by Arnaud Arnaud</div>
         <div>Made with <span class="heart-icon">❤️</span> in Paris 🇫🇷</div>
     </div>
 </div>
@@ -1579,7 +1601,7 @@
             science: ["Solar System", "Sun", "Moon", "Mars", "Jupiter", "Saturne", "Trou Noir", "Voie Lactée", "Galaxie", "Supernova", "Big Bang", "Pesanteur / Gravité", "Oxygène", "Hydrogène", "Atome", "Molécule", "ADN", "Cellule", "Corps Humain", "Cœur", "Cerveau", "Squelette", "Muscle", "Microscope", "Telescope", "Électricité", "Énergie Solaire", "Volcan", "Séisme / Tremblement de terre", "Tsunami", "Tornade", "Dinosaure", "Tyrannosaure", "Baleine Bleue", "Lion", "Aigle", "Loup", "Requin Blanc", "Chimpanzé", "Panda", "Biodiversité", "Photosynthèse", "Gravité", "Vitesse de la Lumière", "Théorie de la Relativité", "Vaccin", "Pénicilline", "Robotique", "Intelligence Artificielle", "Fusée Spatiale", "Station Spatiale Internationale", "Terre", "Vénus", "Mercure", "Uranus", "Neptune", "Pluton", "Comète", "Astéroïde", "Éclipse Solaire", "Atmosphère", "Couche d'Ozone", "Changement Climatique", "Énergie Nucléaire", "Énergie Éolienne", "Neutron", "Proton", "Électron", "Tableau Périodique", "Carbone", "Azote", "Eau (H2O)", "Gène", "Chromosome", "Bactérie", "Virus", "Système Immunitaire", "Poumons", "Estomac", "Foie", "Reins", "Peau", "Neurone", "Fossile", "Mammouth", "Biodiversité Marine", "Récif Corallien", "Écosystème", "Symbiose", "Onde Électromagnétique", "Laser", "Fibre Optique", "Imprimante 3D", "Droniste / Drone", "Algorithme", "Physique Quantique", "Nanotechnologie", "Clone"],
             retro: ["Walkman", "Audio Cassette", "VHS Tape", "3.5-inch Floppy Disk", "Dial Phone", "Tamagotchi", "Game Boy", "Pogs", "Yo-yo", "Rollerblades", "Pins", "Nokia 3310", "MSN Messenger", "CD-ROM", "MP3 Player", "Pokemon Gen 1", "Tetris", "Pac-Man", "Rubik's Cube", "Neon Clothes", "Spice Girls", "Nirvana", "Michael Jackson", "Britney Spears", "Daft Punk", "Furby", "Slinky", "Marbles", "Super Nintendo", "Sega Genesis", "PlayStation 1", "Sega", "Sonic the Hedgehog", "Duck Tales", "Teenage Mutant Ninja Turtles", "Power Rangers", "Payphone", "Phone Card", "Encarta", "Napster", "Kazaa", "eMule", "Yahoo!", "Disposible Camera", "Film Roll", "Slide Projector", "Bubble Tape", "Push Pop", "Bowl Cut", "Tracksuit", "Baggy Jeans", "Buffalo Shoes", "Doc Martens", "Bandana", "Scoubidou", "Macarena", "Charly & Lulu", "Hit Machine", "Furby", "Diabolo", "Slinky", "Bop It", "Game Gear", "Atari", "Arcade Cabinet", "LaserDisc", "PalmPilot", "CRT TV", "Boombox", "Scrunchies", "Platform Shoes", "Jelly Shoes", "Mood Rings", "Slap Bracelets", "Beanie Babies", "Giga Pet", "Skip It", "Lite-Brite", "Polly Pocket", "Action Man", "Barbie & Ken", "G.I. Joe", "Transformers", "He-Man", "Thundercats", "Care Bears", "My Little Pony", "Strawberry Shortcake"],
             cinema: ["Hollywood", "Red Carpet", "Oscars", "Cannes Film Festival", "Movie Director", "Actor / Actress", "Screenplay", "Steven Spielberg", "George Lucas", "Quentin Tarantino", "Christopher Nolan", "Martin Scorsese", "Alfred Hitchcock", "James Cameron", "Leonardo DiCaprio", "Brad Pitt", "Tom Cruise", "Johnny Depp", "Robert De Niro", "Al Pacino", "Meryl Streep", "Scarlett Johansson", "Angelina Jolie", "Titanic", "Avatar", "Star Wars", "Jurassic Park", "Inception", "Pulp Fiction", "The Godfather", "Gladiator", "The Matrix", "Harry Potter", "Lord of the Rings", "Forrest Gump", "Back to the Future", "Indiana Jones", "James Bond 007", "Jaws", "Alien", "Terminator", "Fight Club", "La La Land", "The Avengers", "Clint Eastwood", "Morgan Freeman", "Denzel Washington", "Tom Hanks", "Will Smith", "Keanu Reeves", "Harrison Ford", "Samuel L. Jackson", "Cate Blanchett", "Kate Winslet", "Emma Stone", "Natalie Portman", "Alain Delon", "Gérard Depardieu", "Omar Sy", "Schindler's List", "Braveheart", "Saving Private Ryan", "Interstellar", "Oppenheimer", "Barbie Movie", "The Dark Knight", "Shrek", "Toy Story", "The Lion King", "The Sixth Sense", "The Truman Show", "The Green Mile", "The Silence of the Lambs", "Seven", "The Usual Suspects", "Scarface", "Singin' in the Rain", "Psycho", "Citizen Kane", "Casablanca", "Gone with the Wind", "2001: A Space Odyssey", "A Clockwork Orange", "Taxi Driver", "Apocalypse Now", "Goodfellas", "Die Hard", "Back to the Future Part II", "Ghostbusters", "E.T. the Extra-Terrestrial", "The Shining", "Blade Runner", "Breakfast at Tiffany's"],
-            people: ["YouTuber", "Streamer", "Influencer", "TikTok", "Instagram", "Twitch", "PewDiePie", "MrBeast", "Kim Kardashian", "Kylie Jenner", "Beyoncé", "Rihanna", "Taylor Swift", "Kanye West", "Drake", "Cristiano Ronaldo", "Lionel Messi", "Kylian Mbappé", "LeBron James", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Bill Gates", "Oprah Winfrey", "Dwayne Johnson (The Rock)", "Zendaya", "Timothée Chalamet", "Selena Gomez", "Ariana Grande", "Justin Bieber", "Dua Lipa", "Billie Eilish", "Paparazzi", "Red Carpet", "Met Gala", "Social Media", "David Beckham", "Victoria Beckham", "Paris Hilton", "Khloé Kardashian", "Kourtney Kardashian", "Kendall Jenner", "Travis Scott", "Bad Bunny", "Rosalía", "Post Malone", "Ed Sheeran", "Bruno Mars", "Katy Perry", "Lady Gaga", "Miley Cyrus", "Snoop Dogg", "Eminem", "50 Cent", "Jay-Z", "Will Smith", "Jada Pinkett", "Tom Holland", "Florence Pugh", "Sydney Sweeney", "Margot Robbie", "Ryan Gosling", "Keanu Reeves", "Pedro Pascal", "Bella Hadid", "Gigi Hadid", "Hailey Bieber", "Khaby Lame", "Charli D'Amelio", "Addison Rae", "Pokimane", "Kai Cenat", "IShowSpeed", "Rubius", "Ibai Llanos", "AuronPlay", "GP Explorer", "Kameto", "Gotaga", "ZeratoR", "Domingo", "JUIDefense"],
+            people: ["YouTuber", "Streamer", "Influencer", "TikTok", "Instagram", "Twitch", "Squeezie", "Mcfly & Carlito", "Inoxtag", "Michou", "Lena Situations", "HugoDécrypte", "Amixem", "Norman", "Cyprien", "PewDiePie", "MrBeast", "Kim Kardashian", "Kylie Jenner", "Beyoncé", "Rihanna", "Taylor Swift", "Kanye West", "Drake", "Cristiano Ronaldo", "Lionel Messi", "Kylian Mbappé", "LeBron James", "Elon Musk", "Mark Zuckerberg", "Jeff Bezos", "Bill Gates", "Oprah Winfrey", "Dwayne Johnson (The Rock)", "Zendaya", "Timothée Chalamet", "Selena Gomez", "Ariana Grande", "Justin Bieber", "Dua Lipa", "Billie Eilish", "Paparazzi", "Red Carpet", "Met Gala", "Social Media", "David Beckham", "Victoria Beckham", "Paris Hilton", "Khloé Kardashian", "Kourtney Kardashian", "Kendall Jenner", "Travis Scott", "Bad Bunny", "Rosalía", "Post Malone", "Ed Sheeran", "Bruno Mars", "Katy Perry", "Lady Gaga", "Miley Cyrus", "Snoop Dogg", "Eminem", "50 Cent", "Jay-Z", "Will Smith", "Jada Pinkett", "Tom Holland", "Florence Pugh", "Sydney Sweeney", "Margot Robbie", "Ryan Gosling", "Keanu Reeves", "Pedro Pascal", "Bella Hadid", "Gigi Hadid", "Hailey Bieber", "Khaby Lame", "Charli D'Amelio", "Addison Rae", "Pokimane", "Kai Cenat", "IShowSpeed", "Rubius", "Ibai Llanos", "AuronPlay", "GP Explorer", "Kameto", "Gotaga", "ZeratoR", "Domingo", "JUIDefense"],
             fashion: ["Chanel", "Louis Vuitton", "Gucci", "Dior", "Prada", "Hermès", "Versace", "Balenciaga", "Yves Saint Laurent", "Burberry", "Nike", "Adidas", "Puma", "Reebok", "New Balance", "Jordan (Sneakers)", "Converse", "Vans", "Air Force 1", "Stan Smith", "Zara", "H&M", "Uniqlo", "Levi's", "Calvin Klein", "Tommy Hilfiger", "Lacoste", "Supreme", "Off-White", "Vogue", "Fashion Week", "Défilé de Mode", "Mannequin / Top Model", "Haute Couture", "Haute Joaillerie", "Sac à Main", "Escarpins", "Baskets Cultes", "Costume Sur-Mesure", "Lunettes Ray-Ban", "Rolex", "Cartier", "Tiffany & Co.", "Logotype", "Savoir-Faire", "Soie", "Cuir", "Denim / Jean", "Streetwear", "Sapeur", "Givenchy", "Fendi", "Valentino", "Armani", "Dolce & Gabbana", "Bottega Veneta", "Alexander McQueen", "Moncler", "Jacquemus", "Jean Paul Gaultier", "Kenzo", "Stella McCartney", "Moschino", "Isabel Marant", "Karl Lagerfeld", "Coco Chanel", "Christian Dior", "Gianni Versace", "Virgil Abloh", "Anna Wintour", "Naomi Campbell", "Kate Moss", "Gisele Bündchen", "Cara Delevingne", "Bella Hadid", "Trench-Coat", "Smoking", "Petite Robe Noire", "T-Shirt Blanc", "Blouson en Cuir", "Casquette NY", "Chapeau Fedora", "Ceinture à Boucle", "Bijoux en Or", "Montre de Luxe", "Parfum Culte", "Maquillage", "Rouge à Lèvres", "Vernis à Ongles", "Robe de Mariée", "Noeuds Papillon", "Cravate en Soie", "Boina", "Tacones Louboutin", "Suela Roja", "Bolso Birkin", "Bolso 2.55", "Gafas de Sol Grandes"],
             travel: ["France", "Italie", "Japon", "États-Unis", "Brésil", "Australie", "Égypte", "Canada", "Mexique", "Chine", "Inde", "Espagne", "Grèce", "Thaïlande", "Maroc", "Pérou", "Islande", "Norvège", "Afrique du Sud", "Argentine", "Paris", "Tokyo", "New York", "Rome", "Londres", "Rio de Janeiro", "Sydney", "Le Caire", "Pékin", "Bangkok", "Tour Eiffel", "Statue de la Liberté", "Grande Muraille de Chine", "Pyramides de Gizeh", "Colisée", "Taj Mahal", "Machu Picchu", "Christ Rédempteur", "Pétra", "Acropole d'Athènes", "Passeport", "Valise", "Boussole", "Carte du monde", "Avion", "Sac à dos", "Décalage horaire", "Souvenir", "Billet d'avion", "Appareil photo", "Bateau de croisière", "Hôtel", "Auberge de jeunesse", "Guide touristique", "Escale", "Douane", "Visa", "Monnaie étrangère", "Crème solaire", "Lunettes de soleil", "Gondole de Venise", "Safari", "Aurore boréale", "Plongée sous-marine", "Randonnée en montagne", "Volcano", "Plage de sable blanc", "Désert du Sahara", "Jungle amazonienne", "Fjord", "Allemagne", "Portugal", "Pays-Bas", "Suisse", "Suède", "Chili", "Colombie", "Vietnam", "Indonésie", "Nouvelle-Zélande", "Dubaï", "Istanbul", "Barcelone", "Venise", "Amsterdam", "Los Angeles", "Las Vegas", "San Francisco", "Montréal", "Kyoto", "Big Ben", "Mont Fuji", "Grand Canyon", "Chutes du Niagara", "Mont Everest", "Opéra de Sydney", "Burj Khalifa", "Sagrada Familia", "Mont Saint-Michel"],
             food: ["Pizza", "Burger", "Sushi", "Pâtes Carbonara", "Paëlla", "Tacos", "Couscous", "Fondue Savoyarde", "Raclette", "Crêpe", "Croissant", "Baguette", "Macaron", "Gaufre", "Tiramisu", "Eclair au chocolat", "Tartiflette", "Boeuf Bourguignon", "Cassoulet", "Quiche Lorraine", "Fromage", "Chocolat", "Huile d'olive", "Ail", "Épices", "Piment", "Avocat", "Saumon", "Truffe", "Basilic", "Baguettes chinoises", "Poêle", "Four", "Casserole", "Chef cuisinier", "Menu", "Recette", "Tablier", "Fouet", "Rouleau à pâtisserie", "Guacamole", "Hummus", "Dim Sum", "Ramen", "Pad Thaï", "Kebab", "Fish and Chips", "Nems", "Falafel", "Curry", "Camembert", "Roquefort", "Mozzarella", "Parmesan", "Cheddar", "Gorgonzola", "Brie", "Reblochon", "Feta", "Emmental", "Profiteroles", "Crème brûlée", "Tarte Tatin", "Mousse au chocolat", "Mille-feuille", "Paris-Brest", "Panna Cotta", "Cheesecake", "Churros", "Donut", "Vin rouge", "Champagne", "Café Espresso", "Thé vert", "Jus de fruits", "Cocktail", "Limonade", "Cidre", "Bière", "Eau gazeuse", "Couteau de chef", "Planche à découper", "Spatule", "Tire-bouchon", "Décapsuleur", "Salière", "Poivrier", "Balance de cuisine", "Mixeur", "Cocotte-minute", "Saucisson", "Jambon de Bayonne", "Foie gras", "Huîtres", "Caviar", "Homard", "Crevettes", "Moules frites", "Escargots", "Soupe à l'oignon"],
@@ -1600,7 +1622,7 @@
             manga: ["Goku", "Vegeta", "Naruto Uzumaki", "Sasuke Uchiha", "Luffy", "Zoro", "Saitama", "Levi Ackerman", "Eren Jaeger", "Tanjiro Kamado", "Nezuko", "Gojo Satoru", "Sukuna", "Light Yagami", "L (Death Note)", "Ryuk", "Edward Elric", "Alphonse Elric", "All Might", "Deku (Izuku)", "Gon Freecss", "Killua", "Hisoka", "Ichigo Kurosaki", "Sailor Moon", "Natsu Dragneel", "Lucy Heartfilia", "Rengoku", "Kakashi Hatake", "Itachi Uchiha", "Piccolo", "Gohan", "Freezer", "Cell", "Majin Buu", "Bolas de Dragón", "Kamehameha", "Chidori", "Rasengan", "Fruta del Diablo", "One Piece", "Dragon Ball Z", "Naruto Shippuden", "Demon Slayer", "Jujutsu Kaisen", "My Hero Academia", "Hunter x Hunter", "Fullmetal Alchemist", "Bleach", "Tokyo Ghoul", "Chainsaw Man", "Denji", "Makima", "Anya Forger", "Spy x Family", "One Punch Man", "Death Note", "Fairy Tail", "JoJo's Bizarre Adventure", "Jotaro Kujo", "DIO", "Haikyuu!!", "Blue Lock", "Dr. Stone", "Berserk", "Guts", "Sanji", "Chopper", "Nami", "Megumi Fushiguro", "Nobara Kugisaki", "Shoto Todoroki", "Bakugo", "Aizawa", "Erza Scarlet", "Gray Fullbuster", "Gintoki", "Gintama", "Spike Spiegel", "Cowboy Bebop", "Trunks", "Bulma", "Krilin", "Shikamaru", "Jiraiya", "Tsunade", "Orochimaru", "Inosuke", "Zenitsu", "Muzan", "Ken Kaneki", "Thorfinn", "Vinland Saga"],
             series: ["Stranger Things", "Juego de Tronos", "La Casa de Papel", "Friends", "Breaking Bad", "The Walking Dead", "Peaky Blinders", "El Juego del Calamar", "Miércoles Addams", "The Crown", "Black Mirror", "The Witcher", "The Office", "Cómo Conocí a Vuestra Madre", "The Big Bang Theory", "Anatomía de Grey", "Lucifer", "Prison Break", "Perdidos (Lost)", "Mujeres Desesperadas", "Gossip Girl", "Euphoria", "Narcos", "Dark", "Better Call Saul", "Succession", "The Boys", "El Mandaloriano", "Ted Lasso", "Sherlock", "Jon Nieve", "Daenerys Targaryen", "Walter White", "Jesse Pinkman", "Tommy Shelby", "Eleven (Once)", "El Profesor", "Tokio", "Berlín", "Rachel Green", "Joey Tribbiani", "Chandler Bing", "Sheldon Cooper", "Michael Scott", "Meredith Grey", "Rick Grimes", "Daryl Dixon", "Geralt de Rivia", "Miércoles Addams", "The Last of Us", "Joel", "Ellie", "Bridgerton", "Emily en París", "Vikingos", "Ragnar Lothbrok", "Dexter", "House of the Dragon", "Yellowstone", "Brooklyn Nine-Nine", "Jake Peralta", "Mad Men", "Modern Family", "Sobrenatural", "Los 100", "Smallville", "Glee", "Buffy Cazavampiros", "Embrujadas", "Expediente X", "Twin Peaks", "The White Lotus", "The Bear", "Shogun", "Chernóbil", "Severance", "Ozark", "Homeland", "Fargo", "True Detective", "The Wire", "Los Soprano", "Fleabag", "Westworld", "American Horror Story", "Riverdale", "Por Trece Razones", "You", "Joe Goldberg", "The Good Place", "Parks and Recreation", "Educación Sexual"],
             gaming: ["Mario", "Luigi", "Princesa Peach", "Bowser", "Yoshi", "Link", "Zelda", "Ganondorf", "Pikachu", "Kirby", "Donkey Kong", "Sonic", "Kratos", "Atreus", "Jefe Maestro", "Lara Croft", "Nathan Drake", "Joel", "Ellie", "Arthur Morgan", "Geralt de Rivia", "Cloud Strife", "Sephiroth", "Crash Bandicoot", "Spyro", "Rayman", "Pac-Man", "Tetris", "Minecraft", "Steve", "Creeper", "Fortnite", "Battle Royale", "GTA V", "League of Legends", "Faker", "Counter-Strike", "Valorant", "Overwatch", "Tracer", "World of Warcraft", "Call of Duty", "FIFA / EA FC", "Rocket League", "Apex Legends", "PUBG", "Roblox", "Among Us", "Fall Guys", "Animal Crossing", "Tom Nook", "Super Smash Bros", "Mario Kart", "Caparazón Azul", "PlayStation", "Xbox", "Nintendo Switch", "PC Master Race", "Twitch", "Esport", "Game Over", "Level Up", "Elden Ring", "Dark Souls", "Skyrim", "Cyberpunk 2077", "Assassin's Creed", "Ezio Auditore", "Resident Evil", "God of War", "Uncharted", "The Last of Us", "Aloy", "Hollow Knight", "Hades", "Portal", "GLaDOS", "Half-Life", "Gordon Freeman", "Doom Slayer", "BioShock", "Mass Effect", "Fallout", "Vault Boy", "Final Fantasy", "Kingdom Hearts", "Metal Gear Solid", "Solid Snake", "Street Fighter", "Ryu", "Mortal Kombat", "Scorpion", "Sub-Zero", "Tekken", "Jin Kazama", "Monster Hunter", "Stardew Valley", "Terraria", "Dead by Daylight"],
-            dc: ["Batman", "Bruce Wayne", "Superman", "Clark Kent", "Wonder Woman", "Flash", "Aquaman", "Cyborg", "Green Lantern", "Martian Manhunter", "Shazam", "Green Arrow", "Nightwing", "Batgirl", "Robin", "Supergirl", "Joker", "Harley Quinn", "Bane", "Catwoman", "Pingüino", "Riddler", "Dos Caras", "Hiedra Venenosa", "Mr. Freeze", "Espantapájaros", "Ra's al Ghul", "Deathstroke", "Darkseid", "Lex Luthor", "General Zod", "Brainiac", "Doomsday", "Black Adam", "Sinestro", "Reverse-Flash", "Gotham City", "Metrópolis", "Asilo Arkham", "Batcueva", "Batmóvil", "Bat-Señal", "Batarang", "Lazo de la Verdad", "Kryptonita", "Daily Planet", "Liga de la Justicia", "Escuadrón Suicida", "Teen Titans", "Watchmen", "Dr. Manhattan", "Rorschach", "V de Vendetta", "Constantine", "Peacemaker", "Alfred Pennyworth", "Comisario Gordon", "Lois Lane", "El Caballero Oscuro", "Hawkman", "Hawkgirl", "Atom", "Firestorm", "Doctor Fate", "Zatanna", "Superboy", "Red Hood", "Damian Wayne", "Batwoman", "Solomon Grundy", "Killer Croc", "Clayface", "Man-Bat", "Deadshot", "King Shark", "Polka-Dot Man", "Starfire", "Raven", "Chico Bestia", "Canario Negro", "Cazadora", "Vixen", "Star Sapphire", "Gorila Grodd", "Metallo", "Parásito", "Amanda Waller", "Lucius Fox", "Martha Wayne", "Thomas Wayne", "Vandal Savage", "Universo DC", "Central City", "Temiscira"],
+            dc: ["Batman", "Bruce Wayne", "Superman", "Clark Kent", "Wonder Woman", "Flash", "Aquaman", "Cyborg", "Green Lantern", "Martian Manhunter", "Shazam", "Green Arrow", "Nightwing", "Batgirl", "Robin", "Supergirl", "Joker", "Harley Quinn", "Bane", "Catwoman", "Pingüino", "Riddler", "Dos Caras", "Hiedra Venenosa", "Mr. Freeze", "Espantapájaros", "Ra's al Ghul", "Deathstroke", "Darkseid", "Lex Luthor", "General Zod", "Brainiac", "Doomsday", "Black Adam", "Sinestro", "Reverse-Flash", "Gotham City", "Metrópolis", "Asilo Arkham", "Batcueva", "Batmóvil", "Bat-Señal", "Batarang", "Lazo de la Verdad", "Kryptonita", "Daily Planet", "Liga de la Justicia", "Escuadrón Suicida", "Teen Titans", "Watchmen", "Dr. Manhattan", "Rorschach", "V de Vendetta", "Constantine", "Peacemaker", "Alfred Pennyworth", "Comisario Gordon", "Lois Lane", "El Caballero Oscuro", "Hawkman", "Hawkgirl", "Atom", "Firestorm", "Doctor Fate", "Zatanna", "Superboy", "Red Hood", "Damian Wayne", "Batwoman", "Solomon Grundy", "Killer Croc", "Clayface", "Man-Bat", "Deadshot", "King Shark", "Polka-Dot Man", "Starfire", "Raven", "Chico Bestia", "Canario Negro", "Cazadora", "Vixen", "Star Sapphire", "Gorilla Grodd", "Metallo", "Parásito", "Amanda Waller", "Lucius Fox", "Martha Wayne", "Thomas Wayne", "Vandal Savage", "Universo DC", "Central City", "Temiscira"],
             history: ["Napoleón Bonaparte", "Cleopatra", "Julio César", "Alejandro Magno", "Juana de Arco", "Luis XIV", "María Antonieta", "Carlomagno", "Leonardo da Vinci", "Albert Einstein", "Isaac Newton", "Galileo", "Cristóbal Colón", "Marco Polo", "Abraham Lincoln", "George Washington", "Winston Churchill", "Charles de Gaulle", "Nelson Mandela", "Mahatma Gandhi", "Martin Luther King", "Rosa Parks", "Gengis Kan", "Atila el Huno", "Tutankamón", "Revolución Francesa", "Edad Media", "Renacimiento", "Imperio Romano", "Antiguo Egipto", "Segunda Guerra Mundial", "Guerra Fría", "Caída del Muro de Berlín", "Carrera Espacial", "Declaración de Independencia", "Pirámides", "Palacio de Versalles", "Gladiador", "Caballero", "Samurái", "Faraón", "Emperador", "Llegada a la Luna", "Abolición de la Esclavitud", "Tratado de Versalles", "Batalla de Waterloo", "Marie Curie", "Louis Pasteur", "Charles Darwin", "Aristóteles", "Platón", "Sócrates", "Arquímedes", "Espartaco", "Reina Victoria", "Thomas Edison", "Nikola Tesla", "Hermanos Wright", "Gutenberg", "Revolución Industrial", "Muro de Berlín", "Guerra Civil Americana", "Primera Guerra Mundial", "Época Vikinga", "Imperio Otomano", "Imperio Bizantino", "Edad de Piedra", "Edad de Bronce", "Edad de Hierro", "Carta Magna", "Ley Seca", "Gran Depresión", "Años Veinte", "Movimiento Sufragista", "Mayflower", "Pearl Harbor", "Hiroshima", "Día D", "Watergate", "Desastre del Challenger", "Desastre de Chernóbil", "Ruta de la Seda", "Peste Negra", "Las Cruzadas", "Inquisición Española", "Resistencia Francesa"],
             geo: ["París", "Londres", "Tokio", "Nueva York", "Roma", "Washington D.C.", "Pekín", "Canberra", "Brasilia", "Ottawa", "Madrid", "Berlín", "Atenas", "El Cairo", "Buenos Aires", "Bangkok", "Venecia", "Sídney", "Capitolio", "Torre Eiffel", "Estatua de la Libertad", "Gran Muralla China", "Pirámides de Giza", "Coliseo de Roma", "Taj Mahal", "Machu Picchu", "Petra", "Cristo Redentor", "Big Ben", "Monte Fuji", "Gran Cañón", "Cataratas del Niágara", "Monte Everest", "Burj Khalifa", "Sagrada Familia", "Río Amazonas", "Río Nilo", "Océano Pacífico", "Océano Atlántico", "Desierto del Sahara", "Selva Amazónica", "Polo Norte", "Antártida", "Aurora Boreal", "Los Alpes", "Himalaya", "Islandia", "Groenlandia", "Madagascar", "Australia", "Nueva Zelanda", "Hawái", "Mont Blanc", "Kilimanjaro", "Monte McKinley", "Lago Baikal", "Mar Rojo", "Mar Negro", "Canal de Panamá", "Canal de Suez", "Estrecho de Gibraltar", "San Francisco", "Los Ángeles", "Las Vegas", "Río de Janeiro", "Moscú", "Estambul", "Dubái", "Seúl", "Singapur", "Hong Kong", "Bombay / Mumbai", "Copenhague", "Stockholm", "Amsterdam", "Vienne", "Lisboa", "Dublín", "Bruselas", "Reykjavik", "Polo Sur", "Ecuador (Línea)", "Trópico de Cáncer", "Cabo de Buena Esperanza", "Everest", "Fosse des Mariannes", "Île de Pâques", "Galapagos", "Bermudes (Triangle)", "Vatican"],
             science: ["Système Solaire", "Soleil", "Lune", "Mars", "Jupiter", "Saturne", "Trou Noir", "Voie Lactée", "Galaxie", "Supernova", "Big Bang", "Pesanteur / Gravité", "Oxygène", "Hydrogène", "Atome", "Molécule", "ADN", "Cellule", "Corps Humain", "Cœur", "Cerveau", "Squelette", "Muscle", "Microscope", "Telescope", "Électricité", "Énergie Solaire", "Volcan", "Séisme / Tremblement de terre", "Tsunami", "Tornade", "Dinosaure", "Tyrannosaure", "Baleine Bleue", "Lion", "Aigle", "Loup", "Requin Blanc", "Chimpanzé", "Panda", "Biodiversité", "Photosynthèse", "Gravité", "Vitesse de la Lumière", "Théorie de la Relativité", "Vaccin", "Pénicilline", "Robotique", "Intelligence Artificielle", "Fusée Spatiale", "Station Spatiale Internationale", "Terre", "Vénus", "Mercure", "Uranus", "Neptune", "Pluton", "Comète", "Astéroïde", "Éclipse Solaire", "Atmosphère", "Couche d'Ozone", "Changement Climatique", "Énergie Nucléaire", "Énergie Éolienne", "Neutron", "Proton", "Électron", "Tableau Périodique", "Carbone", "Azote", "Eau (H2O)", "Gène", "Chromosome", "Bactérie", "Virus", "Système Immunitaire", "Poumons", "Estomac", "Foie", "Reins", "Peau", "Neurone", "Fossile", "Mammouth", "Biodiversité Marine", "Récif Corallien", "Écosystème", "Symbiose", "Onde Électromagnétique", "Laser", "Fibre Optique", "Imprimante 3D", "Droniste / Drone", "Algorithme", "Physique Quantique", "Nanotechnologie", "Clone"],
@@ -2484,6 +2506,9 @@
 
 </body>
 </html>
+
+
+
 
 
 
