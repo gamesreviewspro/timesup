@@ -451,6 +451,115 @@ background: rgba(255, 255, 255, 0.15);
 border-color: rgba(255, 255, 255, 0.25);
 }
 
+.pause-toggle-btn {
+background: rgba(255, 255, 255, 0.08);
+border: 1px solid var(--card-border);
+color: var(--text-main);
+width: 34px;
+height: 34px;
+min-width: 34px;
+border-radius: 50%;
+cursor: pointer;
+font-size: 0.95rem;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: all 0.2s ease;
+margin-left: 8px;
+}
+
+.pause-toggle-btn:hover, .pause-toggle-btn:active {
+background: rgba(255, 255, 255, 0.15);
+border-color: rgba(255, 255, 255, 0.25);
+}
+
+.game-toast {
+position: absolute;
+top: 8px;
+left: 50%;
+transform: translateX(-50%) translateY(-10px);
+background: rgba(15, 23, 42, 0.95);
+border: 1px solid var(--warning);
+color: var(--text-main);
+padding: 8px 18px;
+border-radius: 20px;
+font-weight: 800;
+font-size: 0.9rem;
+white-space: nowrap;
+opacity: 0;
+pointer-events: none;
+transition: opacity 0.25s ease, transform 0.25s ease;
+z-index: 5;
+}
+
+.game-toast.show {
+opacity: 1;
+transform: translateX(-50%) translateY(0);
+}
+
+.game-toast.joker {
+border-color: #ffa502;
+color: #ffa502;
+box-shadow: 0 0 20px rgba(255, 165, 2, 0.5);
+}
+
+.game-toast.combo {
+border-color: var(--primary);
+color: var(--primary-hover);
+box-shadow: 0 0 20px rgba(255, 71, 87, 0.5);
+}
+
+.undo-btn {
+align-self: center;
+background: transparent;
+border: none;
+color: var(--text-muted);
+font-size: 0.8rem;
+font-weight: 600;
+padding: 4px 8px;
+cursor: pointer;
+text-decoration: underline;
+display: none;
+}
+
+.undo-btn:hover, .undo-btn:active {
+color: var(--text-main);
+}
+
+.word-recap-toggle {
+width: 100%;
+background: rgba(255, 255, 255, 0.06);
+border: 1px solid var(--card-border);
+color: var(--text-main);
+padding: 10px 14px;
+border-radius: var(--radius-sm);
+font-weight: 700;
+font-size: 0.85rem;
+cursor: pointer;
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-top: 8px;
+}
+
+.word-recap-body {
+max-height: 0;
+overflow: hidden;
+transition: max-height 0.3s ease;
+}
+
+.word-recap-body.open {
+max-height: 320px;
+overflow-y: auto;
+}
+
+.word-recap-body .stats-table {
+margin-top: 6px;
+}
+
+.word-recap-body td.recap-passes { color: var(--warning); font-weight: 700; }
+.word-recap-body td.recap-joker { color: #ffa502; font-weight: 800; }
+
 .score-board {
 display: grid;
 grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
@@ -600,6 +709,7 @@ display: flex;
 justify-content: center;
 align-items: center;
 width: 100%;
+position: relative;
 }
 
 .rules-hint {
@@ -935,6 +1045,31 @@ margin-bottom: 2px;
 </div>
 </div>
 
+<!-- Overlay de pause -->
+<div id="pause-overlay" class="modal-overlay">
+<div class="modal-card">
+<div class="modal-icon">⏸️</div>
+<div class="modal-title" id="pause-overlay-title">Pause</div>
+<div class="modal-body" style="text-align: center;">
+<span id="pause-overlay-hint">Le chrono est en pause.</span>
+</div>
+<button class="btn btn-primary" id="pause-overlay-btn-resume" onclick="togglePause()">▶️ Reprendre</button>
+</div>
+</div>
+
+<!-- Modale de reprise de partie sauvegardée -->
+<div id="resume-modal" class="modal-overlay">
+<div class="modal-card">
+<div class="modal-icon">💾</div>
+<div class="modal-title" id="resume-modal-title">Partie en cours trouvée</div>
+<div class="modal-body" style="text-align: center;">
+<span id="resume-modal-hint">Reprendre là où vous en étiez ?</span>
+</div>
+<button class="btn btn-success" id="resume-modal-btn-resume" onclick="resumeSavedGame()">▶️ Reprendre la partie</button>
+<button class="btn btn-primary" id="resume-modal-btn-new" onclick="discardSavedGame()" style="margin-top: 8px;">🆕 Nouvelle partie</button>
+</div>
+</div>
+
 <!-- Modal des Explications d'installation iOS -->
 <div id="ios-install-modal" class="modal-overlay">
 <div class="modal-card">
@@ -1151,6 +1286,7 @@ margin-bottom: 2px;
 <span id="ui-turn-label">Tour :</span> <strong id="current-team-display" style="color: var(--text-main);">Équipe 1</strong>
 </div>
 <div class="timer" id="timer-display">30s</div>
+<button class="pause-toggle-btn" id="pause-btn" onclick="togglePause()" style="display: none;" aria-label="Pause">⏸️</button>
 </div>
 
 <div class="progress-bar-bg">
@@ -1166,6 +1302,7 @@ margin-bottom: 2px;
 <div class="round-badge" id="round-display">Manche 1 : Description libre</div>
 
 <div id="card-area">
+<div id="game-toast" class="game-toast"></div>
 <button class="btn btn-primary" id="start-turn-btn" onclick="startTurn()">▶️ Démarrer le chrono</button>
 <div class="word-box" id="word-display" style="display: none;">—</div>
 </div>
@@ -1174,6 +1311,8 @@ margin-bottom: 2px;
 <button class="btn btn-primary" id="ui-btn-skip" onclick="skipWord()">↩️ Passer</button>
 <button class="btn btn-success" id="ui-btn-found" onclick="validateWord()">✅ Trouvé !</button>
 </div>
+
+<button class="undo-btn" id="undo-btn" onclick="undoLastFound()">↺ Annuler le dernier mot trouvé</button>
 </div>
 
 <!-- Écran de fin -->
@@ -1196,6 +1335,28 @@ margin-bottom: 2px;
 </div>
 
 <div id="trophies-container" class="trophy-container" style="display: none;"></div>
+
+<div id="word-recap-section" style="display: none;">
+<button type="button" class="word-recap-toggle" id="word-recap-toggle" onclick="toggleWordRecap()">
+<span id="word-recap-toggle-label">📜 Voir tous les mots de la partie</span>
+<span id="word-recap-arrow">▾</span>
+</button>
+<div class="word-recap-body" id="word-recap-body">
+<table class="stats-table">
+<thead>
+<tr>
+<th id="ui-th-recap-word">Mot</th>
+<th id="ui-th-recap-round">Manche</th>
+<th id="ui-th-recap-team">Équipe</th>
+<th id="ui-th-recap-passes">Passes</th>
+</tr>
+</thead>
+<tbody id="word-recap-body-table"></tbody>
+</table>
+</div>
+</div>
+
+<button class="btn btn-primary" id="share-podium-btn" onclick="sharePodium()" style="display: none;">📤 Partager le podium</button>
 
 <!-- Bloc de soutien PayPal en fin de partie (Victoire) -->
 <div id="end-support-container" class="end-support-box" style="display: none;">
@@ -1461,6 +1622,22 @@ roundEndTitle: "Fin de la manche !",
 nextRoundBtn: "Manche suivante ➡️",
 restartBtn: "🔄 Recommencer une partie",
 timeUpAlert: "Temps écoulé !",
+pauseTitle: "Pause",
+pauseHint: "Le chrono est en pause.",
+pauseResumeBtn: "▶️ Reprendre",
+jokerFoundToast: "🃏 MOT JOKER ! +2",
+comboToast: "Combo",
+recapWordTh: "Mot",
+recapRoundTh: "Manche",
+recapTeamTh: "Équipe",
+recapPassesTh: "Passes",
+wordRecapToggleLabel: "📜 Voir tous les mots de la partie",
+sharePodiumBtn: "📤 Partager le podium",
+resumeModalTitle: "Partie en cours trouvée",
+resumeModalHint: "Reprendre là où vous en étiez ?",
+resumeBtnLabel: "▶️ Reprendre la partie",
+newGameBtnLabel: "🆕 Nouvelle partie",
+shareTitle: "Rush'Up! - Résultats",
 turnOfText: "C'est au tour de :",
 btnReady: "🚀 Prêt !",
 btnRulesHeader: "📜 Règles",
@@ -1606,6 +1783,22 @@ roundEndTitle: "End of round!",
 nextRoundBtn: "Next round ➡️",
 restartBtn: "🔄 Play again",
 timeUpAlert: "Time's up!",
+pauseTitle: "Paused",
+pauseHint: "The timer is paused.",
+pauseResumeBtn: "▶️ Resume",
+jokerFoundToast: "🃏 JOKER WORD! +2",
+comboToast: "Combo",
+recapWordTh: "Word",
+recapRoundTh: "Round",
+recapTeamTh: "Team",
+recapPassesTh: "Passes",
+wordRecapToggleLabel: "📜 See all words from this game",
+sharePodiumBtn: "📤 Share the podium",
+resumeModalTitle: "Saved game found",
+resumeModalHint: "Resume where you left off?",
+resumeBtnLabel: "▶️ Resume game",
+newGameBtnLabel: "🆕 New game",
+shareTitle: "Rush'Up! - Results",
 turnOfText: "It's turn of:",
 btnReady: "🚀 Ready!",
 btnRulesHeader: "📜 Rules",
@@ -1751,6 +1944,22 @@ roundEndTitle: "¡Fin de la ronda!",
 nextRoundBtn: "Siguiente ronda ➡️",
 restartBtn: "🔄 Jugar de nuevo",
 timeUpAlert: "¡Tiempo agotado!",
+pauseTitle: "Pausa",
+pauseHint: "El temporizador está en pausa.",
+pauseResumeBtn: "▶️ Reanudar",
+jokerFoundToast: "🃏 ¡PALABRA COMODÍN! +2",
+comboToast: "Combo",
+recapWordTh: "Palabra",
+recapRoundTh: "Ronda",
+recapTeamTh: "Equipo",
+recapPassesTh: "Pases",
+wordRecapToggleLabel: "📜 Ver todas las palabras de la partida",
+sharePodiumBtn: "📤 Compartir el podio",
+resumeModalTitle: "Partida guardada encontrada",
+resumeModalHint: "¿Reanudar donde lo dejaste?",
+resumeBtnLabel: "▶️ Reanudar partida",
+newGameBtnLabel: "🆕 Nueva partida",
+shareTitle: "Rush'Up! - Resultados",
 turnOfText: "Es el turno de:",
 btnReady: "🚀 ¡Listo!",
 btnRulesHeader: "📜 Reglas",
@@ -1935,6 +2144,8 @@ let turnStartTime = 0;
 let timerConfig = 30;
 let timeLeft = 30;
 let isTurnActive = false;
+let isPaused = false;
+let pauseStartTime = 0;
 
 let teamPlayers = {};
 let playerTurnIndexes = {};
@@ -1944,6 +2155,13 @@ let currentTurnSuccessCount = 0;
 let tgvRecord = { entity: '', count: 0 };
 let passesPerEntity = {};
 let passesPerWordInRound = {};
+let passesPerWordTotal = {};
+let wordFoundLog = [];
+let jokerWord = null;
+let currentStreak = 0;
+let lastFoundAction = null;
+
+const SAVE_KEY = 'rushup_save_v1';
 
 let deferredPrompt = null;
 
@@ -2186,6 +2404,17 @@ document.getElementById('ui-th-player').innerText = t.thPlayer;
 document.getElementById('ui-th-team').innerText = t.thTeam;
 document.getElementById('ui-th-score').innerText = t.thScore;
 
+document.getElementById('ui-th-recap-word').innerText = t.recapWordTh || 'Word';
+document.getElementById('ui-th-recap-round').innerText = t.recapRoundTh || 'Round';
+document.getElementById('ui-th-recap-team').innerText = t.recapTeamTh || 'Team';
+document.getElementById('ui-th-recap-passes').innerText = t.recapPassesTh || 'Passes';
+document.getElementById('word-recap-toggle-label').innerText = t.wordRecapToggleLabel || '📜 See all words from this game';
+document.getElementById('share-podium-btn').innerText = t.sharePodiumBtn || '📤 Share the podium';
+document.getElementById('resume-modal-title').innerText = t.resumeModalTitle || 'Saved game found';
+document.getElementById('resume-modal-hint').innerText = t.resumeModalHint || 'Resume where you left off?';
+document.getElementById('resume-modal-btn-resume').innerText = t.resumeBtnLabel || '▶️ Resume game';
+document.getElementById('resume-modal-btn-new').innerText = t.newGameBtnLabel || '🆕 New game';
+
 document.getElementById('overlay-text-turn').innerText = t.turnOfText;
 document.getElementById('overlay-btn-ready').innerText = t.btnReady;
 
@@ -2328,6 +2557,10 @@ playerTurnIndexes = {};
 playerStats = {};
 passesPerEntity = {};
 passesPerWordInRound = {};
+passesPerWordTotal = {};
+wordFoundLog = [];
+currentStreak = 0;
+lastFoundAction = null;
 tgvRecord = { entity: '', count: 0 };
 
 for (let i = 1; i <= numTeams; i++) {
@@ -2385,10 +2618,12 @@ finalBank = themeBank.slice(0, wordCount);
 shuffleArray(finalBank);
 gameDeck = [...finalBank];
 remainingWords = [...gameDeck];
+jokerWord = gameDeck.length > 0 ? gameDeck[Math.floor(Math.random() * gameDeck.length)] : null;
 
 currentRound = 1;
 currentTeam = 1;
 
+clearSavedGame();
 prepareRoundIntro();
 }
 
@@ -2454,7 +2689,9 @@ endBoard.innerHTML = endHtml;
 function prepareTurn() {
 const t = translations[currentLang] || translations['en'];
 isTurnActive = false;
+isPaused = false;
 if (timerAnimationId) cancelAnimationFrame(timerAnimationId);
+document.getElementById('pause-overlay').classList.remove('active');
 
 timeLeft = timerConfig;
 currentTurnSuccessCount = 0;
@@ -2473,6 +2710,16 @@ document.getElementById('start-turn-btn').style.display = 'flex';
 document.getElementById('word-display').style.display = 'none';
 document.getElementById('action-btns').style.display = 'none';
 
+const pauseBtn = document.getElementById('pause-btn');
+if (pauseBtn) pauseBtn.style.display = 'none';
+
+currentStreak = 0;
+lastFoundAction = null;
+const undoBtn = document.getElementById('undo-btn');
+if (undoBtn) undoBtn.style.display = 'none';
+const toast = document.getElementById('game-toast');
+if (toast) toast.classList.remove('show');
+
 document.getElementById('current-team-display').innerText = `${t.team} ${currentTeam}`;
 renderScoreBoards();
 
@@ -2482,33 +2729,17 @@ document.getElementById('current-player-name').innerText = getCurrentPlayerName(
 } else {
 document.getElementById('expert-player-banner').style.display = 'none';
 }
+
+saveGameState();
 }
 
-function startTurn() {
-if (remainingWords.length === 0) return;
+let timerLastSeconds = 0;
 
-unlockIosAudioPool();
-triggerVibration();
-
-isTurnActive = true;
-currentTurnSuccessCount = 0;
-document.getElementById('start-turn-btn').style.display = 'none';
-document.getElementById('word-display').style.display = 'flex';
-document.getElementById('action-btns').style.display = 'grid';
-
-const skipBtn = document.getElementById('ui-btn-skip');
-if (skipBtn) skipBtn.disabled = !isPassAllowed();
-
-showCurrentWord();
+function updateTimerFrame(now) {
+if (!isTurnActive || isPaused) return;
 
 const timerElem = document.getElementById('timer-display');
 const timerBar = document.getElementById('timer-bar');
-
-turnStartTime = performance.now();
-let lastSeconds = timerConfig;
-
-function updateTimerFrame(now) {
-if (!isTurnActive) return;
 
 const elapsedSeconds = (now - turnStartTime) / 1000;
 const remainingTime = Math.max(0, timerConfig - elapsedSeconds);
@@ -2517,8 +2748,8 @@ timeLeft = Math.ceil(remainingTime);
 const percentage = (remainingTime / timerConfig) * 100;
 timerBar.style.width = percentage + '%';
 
-if (timeLeft !== lastSeconds) {
-lastSeconds = timeLeft;
+if (timeLeft !== timerLastSeconds) {
+timerLastSeconds = timeLeft;
 timerElem.innerText = timeLeft + 's';
 
 if (timeLeft <= 5 && timeLeft > 0) {
@@ -2546,7 +2777,54 @@ timerAnimationId = requestAnimationFrame(updateTimerFrame);
 }
 }
 
+function startTurn() {
+if (remainingWords.length === 0) return;
+
+unlockIosAudioPool();
+triggerVibration();
+
+isTurnActive = true;
+isPaused = false;
+currentTurnSuccessCount = 0;
+document.getElementById('start-turn-btn').style.display = 'none';
+document.getElementById('word-display').style.display = 'flex';
+document.getElementById('action-btns').style.display = 'grid';
+
+const pauseBtn = document.getElementById('pause-btn');
+if (pauseBtn) pauseBtn.style.display = 'flex';
+
+const skipBtn = document.getElementById('ui-btn-skip');
+if (skipBtn) skipBtn.disabled = !isPassAllowed();
+
+showCurrentWord();
+
+turnStartTime = performance.now();
+timerLastSeconds = timerConfig;
+
 timerAnimationId = requestAnimationFrame(updateTimerFrame);
+}
+
+function togglePause() {
+if (!isTurnActive) return;
+const t = translations[currentLang] || translations['en'];
+
+if (isPaused) {
+isPaused = false;
+turnStartTime += (performance.now() - pauseStartTime);
+document.getElementById('pause-overlay').classList.remove('active');
+timerAnimationId = requestAnimationFrame(updateTimerFrame);
+} else {
+isPaused = true;
+pauseStartTime = performance.now();
+if (timerAnimationId) cancelAnimationFrame(timerAnimationId);
+document.body.classList.remove('stress-mode');
+document.getElementById('pause-overlay-title').innerText = t.pauseTitle || 'Pause';
+document.getElementById('pause-overlay-hint').innerText = t.pauseHint || 'Le chrono est en pause.';
+document.getElementById('pause-overlay-btn-resume').innerText = t.pauseResumeBtn || '▶️ Reprendre';
+document.getElementById('pause-overlay').classList.add('active');
+}
+
+triggerVibration();
 }
 
 function showCurrentWord() {
@@ -2555,14 +2833,31 @@ document.getElementById('word-display').innerText = remainingWords[0];
 }
 }
 
+function showGameToast(message, variant) {
+const toast = document.getElementById('game-toast');
+if (!toast) return;
+toast.innerText = message;
+toast.className = 'game-toast show' + (variant ? ` ${variant}` : '');
+clearTimeout(toast._hideTimeout);
+toast._hideTimeout = setTimeout(() => {
+toast.classList.remove('show');
+}, 1400);
+}
+
 function validateWord() {
-if (!isTurnActive) return;
+if (!isTurnActive || isPaused) return;
+const t = translations[currentLang] || translations['en'];
 
 playSoundSuccess();
 triggerVibration(40);
 
-scores[currentTeam]++;
+const foundWord = remainingWords[0];
+const isJoker = jokerWord !== null && foundWord === jokerWord;
+const pointsGained = isJoker ? 2 : 1;
+
+scores[currentTeam] += pointsGained;
 currentTurnSuccessCount++;
+currentStreak++;
 
 const entity = getActiveEntityNameWithTeam();
 if (currentTurnSuccessCount > tgvRecord.count) {
@@ -2572,9 +2867,35 @@ tgvRecord = { entity: entity, count: currentTurnSuccessCount };
 const scoreElem = document.getElementById(`score-${currentTeam}`);
 if (scoreElem) scoreElem.innerText = scores[currentTeam];
 
-if (isExpertMode) {
-const activePlayer = getCurrentPlayerName();
-if (activePlayer) playerStats[activePlayer]++;
+const activePlayer = isExpertMode ? getCurrentPlayerName() : null;
+if (isExpertMode && activePlayer) {
+playerStats[activePlayer] = (playerStats[activePlayer] || 0) + pointsGained;
+}
+
+wordFoundLog.push({
+word: foundWord,
+round: currentRound,
+team: currentTeam,
+entity: activePlayer,
+joker: isJoker,
+passes: passesPerWordTotal[foundWord] || 0
+});
+
+lastFoundAction = {
+word: foundWord,
+team: currentTeam,
+player: activePlayer,
+points: pointsGained,
+streakBefore: currentStreak - 1
+};
+const undoBtn = document.getElementById('undo-btn');
+if (undoBtn) undoBtn.style.display = 'block';
+
+if (isJoker) {
+showGameToast(t.jokerFoundToast || '🃏 MOT JOKER ! +2', 'joker');
+triggerVibration([30, 40, 30]);
+} else if (currentStreak >= 3) {
+showGameToast(`🔥 ${t.comboToast || 'Combo'} x${currentStreak}`, 'combo');
 }
 
 remainingWords.shift();
@@ -2584,13 +2905,42 @@ endTurn(true);
 } else {
 showCurrentWord();
 }
+
+saveGameState();
+}
+
+function undoLastFound() {
+if (!lastFoundAction || !isTurnActive || isPaused) return;
+
+scores[lastFoundAction.team] -= lastFoundAction.points;
+if (isExpertMode && lastFoundAction.player) {
+playerStats[lastFoundAction.player] = (playerStats[lastFoundAction.player] || 0) - lastFoundAction.points;
+}
+
+const scoreElem = document.getElementById(`score-${lastFoundAction.team}`);
+if (scoreElem) scoreElem.innerText = scores[lastFoundAction.team];
+
+remainingWords.unshift(lastFoundAction.word);
+wordFoundLog.pop();
+currentTurnSuccessCount = Math.max(0, currentTurnSuccessCount - 1);
+currentStreak = lastFoundAction.streakBefore;
+
+showCurrentWord();
+triggerVibration();
+
+lastFoundAction = null;
+const undoBtn = document.getElementById('undo-btn');
+if (undoBtn) undoBtn.style.display = 'none';
+
+saveGameState();
 }
 
 function skipWord() {
-if (!isTurnActive || !isPassAllowed() || remainingWords.length <= 1) return;
+if (!isTurnActive || isPaused || !isPassAllowed() || remainingWords.length <= 1) return;
 
 playSoundSkip();
 triggerVibration(20);
+currentStreak = 0;
 
 if (isPenaltyActive) {
 turnStartTime -= (penaltySeconds * 1000);
@@ -2613,16 +2963,23 @@ passesPerEntity[entityKey] = (passesPerEntity[entityKey] || 0) + 1;
 
 const currentWord = remainingWords[0];
 passesPerWordInRound[currentWord] = (passesPerWordInRound[currentWord] || 0) + 1;
+passesPerWordTotal[currentWord] = (passesPerWordTotal[currentWord] || 0) + 1;
 
 const skippedWord = remainingWords.shift();
 remainingWords.push(skippedWord);
 showCurrentWord();
+saveGameState();
 }
 
 function endTurn(deckEmpty = false) {
 const t = translations[currentLang] || translations['en'];
 if (timerAnimationId) cancelAnimationFrame(timerAnimationId);
 isTurnActive = false;
+isPaused = false;
+document.getElementById('pause-overlay').classList.remove('active');
+
+const pauseBtnEnd = document.getElementById('pause-btn');
+if (pauseBtnEnd) pauseBtnEnd.style.display = 'none';
 
 document.body.classList.remove('stress-mode');
 document.getElementById('timer-display').classList.remove('warning', 'penalty-flash');
@@ -2714,6 +3071,8 @@ if (currentRound < 3) {
 document.getElementById('round-end-title').innerText = `${t.roundEndTitle}`;
 document.getElementById('next-round-btn').innerText = t.nextRoundBtn;
 document.getElementById('trophies-container').style.display = 'none';
+document.getElementById('word-recap-section').style.display = 'none';
+document.getElementById('share-podium-btn').style.display = 'none';
 if (supportBox) supportBox.style.display = 'none';
 showScreen('round-end-screen');
 } else {
@@ -2736,11 +3095,16 @@ winnerText = `${t.team} ${winners[0]} ${t.win}`;
 document.getElementById('round-end-title').innerText = `${t.victory} ${winnerText}`;
 document.getElementById('next-round-btn').innerText = t.restartBtn;
 
+document.getElementById('trophies-container').style.display = 'flex';
 renderTrophies();
+renderWordRecap();
 launchConfetti();
+
+document.getElementById('share-podium-btn').style.display = 'block';
 
 if (supportBox) supportBox.style.display = 'flex';
 
+clearSavedGame();
 showScreen('round-end-screen');
 }
 }
@@ -2887,9 +3251,243 @@ remainingWords = [...gameDeck];
 currentTeam = 1;
 prepareRoundIntro();
 } else {
+clearSavedGame();
 goToLanding();
 }
 }
+
+// --- RÉCAP DES MOTS DE LA PARTIE ---
+function renderWordRecap() {
+const t = translations[currentLang] || translations['en'];
+const section = document.getElementById('word-recap-section');
+const tbody = document.getElementById('word-recap-body-table');
+
+if (!wordFoundLog.length) {
+section.style.display = 'none';
+return;
+}
+
+tbody.innerHTML = '';
+wordFoundLog.forEach(entry => {
+const row = document.createElement('tr');
+const wordCell = entry.joker ? `${entry.word} 🃏` : entry.word;
+const passClass = entry.passes > 0 ? ' class="recap-passes"' : '';
+row.innerHTML = `
+<td${entry.joker ? ' class="recap-joker"' : ''}>${wordCell}</td>
+<td>${entry.round}</td>
+<td>${t.team} ${entry.team}</td>
+<td${passClass}>${entry.passes}</td>
+`;
+tbody.appendChild(row);
+});
+
+document.getElementById('word-recap-body').classList.remove('open');
+document.getElementById('word-recap-arrow').innerText = '▾';
+section.style.display = 'block';
+}
+
+function toggleWordRecap() {
+const body = document.getElementById('word-recap-body');
+const arrow = document.getElementById('word-recap-arrow');
+body.classList.toggle('open');
+arrow.innerText = body.classList.contains('open') ? '▴' : '▾';
+}
+
+// --- PARTAGE DU PODIUM ---
+function sharePodium() {
+const t = translations[currentLang] || translations['en'];
+triggerVibration();
+
+const standings = [];
+for (let i = 1; i <= numTeams; i++) {
+standings.push({ team: i, score: scores[i] || 0 });
+}
+standings.sort((a, b) => b.score - a.score);
+
+const canvas = document.createElement('canvas');
+const width = 800;
+const height = 300 + standings.length * 110;
+canvas.width = width;
+canvas.height = height;
+const ctx = canvas.getContext('2d');
+
+const bgGrad = ctx.createLinearGradient(0, 0, width, height);
+bgGrad.addColorStop(0, '#0f172a');
+bgGrad.addColorStop(0.5, '#1e1b4b');
+bgGrad.addColorStop(1, '#311042');
+ctx.fillStyle = bgGrad;
+ctx.fillRect(0, 0, width, height);
+
+const titleGrad = ctx.createLinearGradient(0, 0, width, 0);
+titleGrad.addColorStop(0, '#ff4757');
+titleGrad.addColorStop(1, '#ffa502');
+ctx.fillStyle = titleGrad;
+ctx.font = '900 56px -apple-system, sans-serif';
+ctx.textAlign = 'center';
+ctx.fillText("Rush'Up! 🎉", width / 2, 90);
+
+ctx.fillStyle = '#94a3b8';
+ctx.font = '600 22px -apple-system, sans-serif';
+ctx.fillText(t.shareTitle || "Résultats de la partie", width / 2, 130);
+
+const medals = ['🥇', '🥈', '🥉'];
+let y = 210;
+standings.forEach((s, index) => {
+const cardY = y;
+ctx.fillStyle = index === 0 ? 'rgba(255, 165, 2, 0.18)' : 'rgba(255, 255, 255, 0.06)';
+ctx.strokeStyle = index === 0 ? '#ffa502' : 'rgba(255,255,255,0.15)';
+ctx.lineWidth = 2;
+roundRectPath(ctx, 60, cardY, width - 120, 90, 18);
+ctx.fill();
+ctx.stroke();
+
+ctx.fillStyle = '#f8fafc';
+ctx.font = '800 34px -apple-system, sans-serif';
+ctx.textAlign = 'left';
+const medal = medals[index] || `#${index + 1}`;
+ctx.fillText(`${medal} ${t.team} ${s.team}`, 90, cardY + 57);
+
+ctx.textAlign = 'right';
+ctx.fillStyle = '#ffa502';
+ctx.font = '900 40px -apple-system, sans-serif';
+ctx.fillText(`${s.score}`, width - 90, cardY + 60);
+
+y += 110;
+});
+
+ctx.textAlign = 'center';
+ctx.fillStyle = '#94a3b8';
+ctx.font = '600 18px -apple-system, sans-serif';
+ctx.fillText("Rush'Up! Ultimate Edition", width / 2, height - 30);
+
+canvas.toBlob(async (blob) => {
+if (!blob) return;
+const fileName = 'rushup-podium.png';
+
+if (navigator.canShare && navigator.share) {
+const file = new File([blob], fileName, { type: 'image/png' });
+if (navigator.canShare({ files: [file] })) {
+try {
+await navigator.share({
+files: [file],
+title: t.shareTitle || "Rush'Up! - Résultats"
+});
+return;
+} catch (err) {
+// L'utilisateur a annulé ou le partage a échoué : on retombe sur le téléchargement
+}
+}
+}
+
+const url = URL.createObjectURL(blob);
+const link = document.createElement('a');
+link.href = url;
+link.download = fileName;
+document.body.appendChild(link);
+link.click();
+link.remove();
+setTimeout(() => URL.revokeObjectURL(url), 2000);
+}, 'image/png');
+}
+
+function roundRectPath(ctx, x, y, w, h, r) {
+ctx.beginPath();
+ctx.moveTo(x + r, y);
+ctx.arcTo(x + w, y, x + w, y + h, r);
+ctx.arcTo(x + w, y + h, x, y + h, r);
+ctx.arcTo(x, y + h, x, y, r);
+ctx.arcTo(x, y, x + w, y, r);
+ctx.closePath();
+}
+
+// --- SAUVEGARDE / REPRISE DE PARTIE ---
+function saveGameState() {
+try {
+const state = {
+v: 1,
+savedAt: Date.now(),
+currentLang, numTeams, isExpertMode, passRule, isPenaltyActive, penaltySeconds,
+timerConfig, gameDeck, remainingWords, scores, currentTeam, currentRound,
+teamPlayers, playerTurnIndexes, playerStats, tgvRecord, passesPerEntity,
+passesPerWordInRound, passesPerWordTotal, wordFoundLog, jokerWord
+};
+localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+} catch (err) {
+// Stockage indisponible (mode privé, quota atteint...) : on ignore silencieusement
+}
+}
+
+function loadSavedGame() {
+try {
+const raw = localStorage.getItem(SAVE_KEY);
+if (!raw) return null;
+const state = JSON.parse(raw);
+if (!state || !state.gameDeck || !state.gameDeck.length) return null;
+return state;
+} catch (err) {
+return null;
+}
+}
+
+function clearSavedGame() {
+try {
+localStorage.removeItem(SAVE_KEY);
+} catch (err) {
+// Stockage indisponible : rien à faire
+}
+}
+
+function resumeSavedGame() {
+const state = loadSavedGame();
+document.getElementById('resume-modal').classList.remove('active');
+if (!state) return;
+
+currentLang = state.currentLang || 'en';
+numTeams = state.numTeams;
+isExpertMode = state.isExpertMode;
+passRule = state.passRule;
+isPenaltyActive = state.isPenaltyActive;
+penaltySeconds = state.penaltySeconds;
+timerConfig = state.timerConfig;
+gameDeck = state.gameDeck;
+remainingWords = state.remainingWords;
+scores = state.scores;
+currentTeam = state.currentTeam;
+currentRound = state.currentRound;
+teamPlayers = state.teamPlayers;
+playerTurnIndexes = state.playerTurnIndexes;
+playerStats = state.playerStats;
+tgvRecord = state.tgvRecord;
+passesPerEntity = state.passesPerEntity;
+passesPerWordInRound = state.passesPerWordInRound || {};
+passesPerWordTotal = state.passesPerWordTotal || {};
+wordFoundLog = state.wordFoundLog || [];
+jokerWord = state.jokerWord || null;
+
+changeLanguage();
+showScreen('game-screen');
+prepareTurn();
+triggerVibration();
+}
+
+function discardSavedGame() {
+clearSavedGame();
+document.getElementById('resume-modal').classList.remove('active');
+}
+
+function checkForSavedGame() {
+const state = loadSavedGame();
+if (!state) return;
+
+const t = translations[state.currentLang] || translations['en'];
+document.getElementById('resume-modal-title').innerText = t.resumeModalTitle || 'Saved game found';
+document.getElementById('resume-modal-hint').innerText = t.resumeModalHint || 'Resume where you left off?';
+document.getElementById('resume-modal-btn-resume').innerText = t.resumeBtnLabel || '▶️ Resume game';
+document.getElementById('resume-modal-btn-new').innerText = t.newGameBtnLabel || '🆕 New game';
+document.getElementById('resume-modal').classList.add('active');
+}
+
+checkForSavedGame();
 
 </script>
 </body>
