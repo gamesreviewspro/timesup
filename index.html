@@ -273,6 +273,15 @@ height: 18px;
 accent-color: var(--primary);
 }
 
+.checkbox-hint {
+font-size: 0.78rem;
+color: var(--text-muted);
+font-weight: 400;
+line-height: 1.4;
+margin-top: 2px;
+margin-left: 28px;
+}
+
 .accordion-btn {
 background: rgba(15, 23, 42, 0.8);
 border: 1px solid var(--card-border);
@@ -1226,6 +1235,15 @@ margin-bottom: 2px;
 </div>
 </div>
 
+<!-- MOT JOKER -->
+<div class="config-group">
+<div class="checkbox-group">
+<input type="checkbox" id="joker-toggle">
+<label for="joker-toggle" id="ui-label-joker-toggle" style="cursor: pointer;">Mot joker</label>
+</div>
+<div class="checkbox-hint" id="ui-joker-hint">Un mot du paquet est tiré au sort en secret et rapporte le double de points s'il est trouvé. Personne ne sait lequel avant qu'il soit deviné !</div>
+</div>
+
 <div class="config-group">
 <div class="checkbox-group">
 <input type="checkbox" id="custom-words-toggle" onchange="toggleCustomWords()">
@@ -1557,6 +1575,11 @@ function goToLanding() {
 showScreen('landing-screen');
 }
 
+function goToConfigurator() {
+showScreen('start-screen');
+if (isExpertMode) renderExpertFields();
+}
+
 const translations = {
 fr: {
 subtitle: "Choisissez votre édition préférée",
@@ -1578,6 +1601,8 @@ always: "Toujours autoriser",
 never: "Toujours interdire"
 },
 penaltyToggleLabel: "Pénalité de temps au passage",
+jokerToggleLabel: "Mot joker",
+jokerHint: "Un mot du paquet est tiré au sort en secret et rapporte le double de points s'il est trouvé. Personne ne sait lequel avant qu'il soit deviné !",
 penaltyOptions: {
 1: "1 seconde", 2: "2 secondes", 3: "3 secondes", 4: "4 secondes", 5: "5 secondes",
 6: "6 secondes", 7: "7 secondes", 8: "8 secondes", 9: "9 secondes", 10: "10 secondes"
@@ -1739,6 +1764,8 @@ always: "Always allow",
 never: "Always forbid"
 },
 penaltyToggleLabel: "Time penalty on card pass",
+jokerToggleLabel: "Joker word",
+jokerHint: "A word from the deck is secretly drawn and worth double points if found. Nobody knows which one until it's guessed!",
 penaltyOptions: {
 1: "1 second", 2: "2 seconds", 3: "3 seconds", 4: "4 seconds", 5: "5 seconds",
 6: "6 seconds", 7: "7 seconds", 8: "8 seconds", 9: "9 seconds", 10: "10 seconds"
@@ -1900,6 +1927,8 @@ always: "Permitir siempre",
 never: "Prohibir siempre"
 },
 penaltyToggleLabel: "Penalización de tiempo al pasar carta",
+jokerToggleLabel: "Palabra comodín",
+jokerHint: "Se elige en secreto una palabra del mazo que vale el doble de puntos si se adivina. ¡Nadie sabe cuál es hasta que se adivina!",
 penaltyOptions: {
 1: "1 segundo", 2: "2 segundos", 3: "3 segundos", 4: "4 segundos", 5: "5 segundos",
 6: "6 segundos", 7: "7 segundos", 8: "8 segundos", 9: "9 segundos", 10: "10 segundos"
@@ -2219,6 +2248,12 @@ changeLanguage();
 showScreen('start-screen');
 }
 
+function escapeHtml(str) {
+const div = document.createElement('div');
+div.innerText = str;
+return div.innerHTML;
+}
+
 function renderExpertFields() {
 numTeams = parseInt(document.getElementById('team-count-select').value) || 2;
 const container = document.getElementById('expert-config-container');
@@ -2230,9 +2265,10 @@ const div = document.createElement('div');
 div.className = 'config-group';
 const placeholderStr = (i === 1) ? t.placeholderTeam1 : t.placeholderTeamOther;
 const labelStr = t.teamPlayersLabel ? t.teamPlayersLabel.replace('{T}', i) : `${t.team} ${i} :`;
+const prefill = teamPlayers[i] ? escapeHtml(teamPlayers[i].join(', ')) : '';
 div.innerHTML = `
 <label>${labelStr}</label>
-<input type="text" id="team${i}-players-input" placeholder="${placeholderStr}">
+<input type="text" id="team${i}-players-input" placeholder="${placeholderStr}" value="${prefill}">
 `;
 container.appendChild(div);
 }
@@ -2342,6 +2378,8 @@ passSelect.innerHTML = `
 passSelect.value = currentPassVal;
 
 document.getElementById('ui-label-penalty-toggle').innerText = t.penaltyToggleLabel;
+document.getElementById('ui-label-joker-toggle').innerText = t.jokerToggleLabel || 'Joker word';
+document.getElementById('ui-joker-hint').innerText = t.jokerHint || "A word from the deck is secretly drawn and worth double points if found. Nobody knows which one until it's guessed!";
 const penaltySelect = document.getElementById('penalty-seconds-select');
 const currentPenaltyVal = penaltySelect.value || "5";
 penaltySelect.innerHTML = `
@@ -2497,6 +2535,7 @@ const roundText = (t.rounds && (t.rounds[currentRound] || t.rounds[String(curren
 : `Round ${currentRound}`;
 
 document.getElementById('round-intro-title').innerText = roundText;
+document.getElementById('round-display').innerText = roundText;
 
 let rulesText = "";
 if (currentRound === 1) rulesText = t.r1Tooltip;
@@ -2515,7 +2554,7 @@ const listElem = document.getElementById('expert-teams-recap-list');
 let recapHtml = "";
 for (let i = 1; i <= numTeams; i++) {
 const teamName = `${t.team} ${i}`;
-const players = teamPlayers[i] ? teamPlayers[i].join(', ') : '—';
+const players = teamPlayers[i] ? escapeHtml(teamPlayers[i].join(', ')) : '—';
 recapHtml += `<div><strong>${teamName} :</strong> ${players}</div>`;
 }
 listElem.innerHTML = recapHtml;
@@ -2618,7 +2657,8 @@ finalBank = themeBank.slice(0, wordCount);
 shuffleArray(finalBank);
 gameDeck = [...finalBank];
 remainingWords = [...gameDeck];
-jokerWord = gameDeck.length > 0 ? gameDeck[Math.floor(Math.random() * gameDeck.length)] : null;
+const jokerModeEnabled = document.getElementById('joker-toggle').checked;
+jokerWord = (jokerModeEnabled && gameDeck.length > 0) ? gameDeck[Math.floor(Math.random() * gameDeck.length)] : null;
 
 currentRound = 1;
 currentTeam = 1;
@@ -2692,6 +2732,11 @@ isTurnActive = false;
 isPaused = false;
 if (timerAnimationId) cancelAnimationFrame(timerAnimationId);
 document.getElementById('pause-overlay').classList.remove('active');
+
+const roundText = (t.rounds && (t.rounds[currentRound] || t.rounds[String(currentRound)]))
+? (t.rounds[currentRound] || t.rounds[String(currentRound)])
+: `Round ${currentRound}`;
+document.getElementById('round-display').innerText = roundText;
 
 timeLeft = timerConfig;
 currentTurnSuccessCount = 0;
@@ -3053,7 +3098,7 @@ else if (index === 2 && p.score > 0) badge = ' 🥉';
 
 const row = document.createElement('tr');
 row.innerHTML = `
-<td><strong>${p.name}${badge}</strong></td>
+<td><strong>${escapeHtml(p.name)}${badge}</strong></td>
 <td>${t.team} ${p.team}</td>
 <td>${p.score}</td>
 `;
@@ -3115,7 +3160,7 @@ const container = document.getElementById('trophies-container');
 container.innerHTML = '';
 
 const tgvText = tgvRecord.count > 0
-? `<strong>${capitalizeWord(tgvRecord.entity)}</strong> (${tgvRecord.count} ${t.wordsFound})`
+? `<strong>${escapeHtml(capitalizeWord(tgvRecord.entity))}</strong> (${tgvRecord.count} ${t.wordsFound})`
 : "—";
 
 let bestRatio = -1;
@@ -3133,7 +3178,7 @@ const ratio = (pas === 0) ? (val * 10) : (val / pas);
 
 if (val > 0 && ratio > bestRatio) {
 bestRatio = ratio;
-brainWinner = isExpertMode ? capitalizeWord(ent) : `${t.team} ${ent.replace(/\D/g, '')}`;
+brainWinner = isExpertMode ? escapeHtml(capitalizeWord(ent)) : `${t.team} ${ent.replace(/\D/g, '')}`;
 brainDetail = pas === 0
 ? `${val} ${t.wordsFound} (${t.noPasses})`
 : `${val} ${t.wordsFound} / ${pas} passés (Ratio: ${ratio.toFixed(2)})`;
@@ -3151,7 +3196,7 @@ fishWord = w;
 });
 
 const fishText = maxWordPasses > 0
-? `<strong>${fishWord}</strong> (passé ${maxWordPasses} fois)`
+? `<strong>${escapeHtml(fishWord)}</strong> (passé ${maxWordPasses} fois)`
 : "—";
 
 container.innerHTML = `
@@ -3252,7 +3297,7 @@ currentTeam = 1;
 prepareRoundIntro();
 } else {
 clearSavedGame();
-goToLanding();
+goToConfigurator();
 }
 }
 
@@ -3270,7 +3315,7 @@ return;
 tbody.innerHTML = '';
 wordFoundLog.forEach(entry => {
 const row = document.createElement('tr');
-const wordCell = entry.joker ? `${entry.word} 🃏` : entry.word;
+const wordCell = entry.joker ? `${escapeHtml(entry.word)} 🃏` : escapeHtml(entry.word);
 const passClass = entry.passes > 0 ? ' class="recap-passes"' : '';
 row.innerHTML = `
 <td${entry.joker ? ' class="recap-joker"' : ''}>${wordCell}</td>
